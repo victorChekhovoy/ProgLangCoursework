@@ -1,10 +1,16 @@
-(define sum
-  (lambda (n)
-    (if (null? n )
-      0
-      (+ (car n) (sum (cdr n)))
+(define keep-first-n (
+  lambda (n m) (
+    (let output)
+    (if (<= n 0)
+      ()
+      (
+        (const (car m) output)
+        (keep-first-n (- n 1) (cdr m))
+      )
+
+    )
     )
   )
 )
 
-(sum '())
+(keep-first-n 3 '(a b c d e f g))
