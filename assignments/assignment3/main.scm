@@ -36,7 +36,6 @@
     (cond ((not (number? elt)) #f)
           ((not (list? left-bst)) #f)
           ((not (list? right-bst)) #f))
-
     (if (eq? (length left-bst) 3)
       (cond ((not (list? (car (cdr left-bst)))) #f)
             ((not (list? (car (cdr (cdr left-bst))))) #f))
@@ -46,11 +45,10 @@
        (cond ((not (list? (car (cdr right-bst)))) #f)
              ((not (list? (car (cdr (cdr right-bst))))) #f))
        (if (not (null? right-bst))
-         #f))
-
+         #f))))
+;return tree after checking that all inputs are valid
 
 
     ;cons elt (cons left-bst (cons right-bst '())))))
 
-
-(make-bst 5 '() '())
+(display (make-bst 5 '() '()))
