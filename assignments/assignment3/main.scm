@@ -74,3 +74,18 @@
           ((null? (left bst))                              (append (postorder (right bst)) (cons (entry bst) '())))
           ((null? (right bst))                             (append (postorder (left bst)) (cons (entry bst) '())))
           (else                                            (append (append (postorder (left bst)) (postorder (right bst))) (cons (entry bst) '()))))))
+
+(define insert
+  (lambda (v bst)
+    (cond ((null? bst) (make-bst v '() '()))
+          ((eq? v (entry bst)) bst)
+          ((> v (entry bst))
+            (if (null? (right bst))
+              (append (cons (entry bst) '()) (cons (left bst) (cons (make-bst v '() '()) '())))
+              (append (cons (entry bst) '()) (cons (left bst) (cons (insert v (right bst)) '())))))
+          ((< v (entry bst))
+            (if (null? (left bst))
+              (append (cons (entry bst) '()) (cons (make-bst v '() '()) (cons (right bst) '())))
+              (append (cons (entry bst) '()) (append (cons (insert v (left bst)) '()) (cons (right bst) '() ))))))))
+
+(insert 10 '(8 (4 () (6 () (7 () ()))) (28 (22 () (23 () ())) ())))
