@@ -8,7 +8,6 @@
   (lambda (bst)
     (cond ((not (list? bst)) #f)
           ((not (equal? (length bst) 3)) #f)
-          ((not (number? (car bst))) #f)
           ((not (list? (car (cdr bst)))) #f)
           ((not (list? (car (cdr (cdr bst))))) #f)
           (else #t))))
@@ -31,24 +30,47 @@
       #f
       (car (cdr (cdr bst))))))
 
+(define check-for-making
+  (lambda (bst)
+    (cond ((not (list? bst)) #f)
+          ((null? bst) #t)
+          (else (cond ((not (eq? 3 (length bst))) #f)
+            ((not (list? (left bst))) #f)
+            ((not (list? (right bst))) #f)
+            (else #t))))))
+
+(define check-elt
+  (lambda (elt)
+    (and (number? elt) (integer? elt))))
+
 (define make-bst
   (lambda (elt left-bst right-bst)
-    (cond ((not (number? elt)) #f)
-          ((not (list? left-bst)) #f)
-          ((not (list? right-bst)) #f))
-    (if (eq? (length left-bst) 3)
-      (cond ((not (list? (car (cdr left-bst)))) #f)
-            ((not (list? (car (cdr (cdr left-bst))))) #f))
-      (if (not (null? left-bst))
-        #f))
-    (if (eq? (length right-bst) 3)
-       (cond ((not (list? (car (cdr right-bst)))) #f)
-             ((not (list? (car (cdr (cdr right-bst))))) #f))
-       (if (not (null? right-bst))
-         #f))))
-;return tree after checking that all inputs are valid
+    (if (and (check-for-making left-bst) (check-for-making right-bst) (check-elt elt))
+      (cons elt (cons left-bst (cons right-bst '())))
+      #f)))
+
+(define preorder
+  (lambda (bst)
+    (cond ((null? bst) '())
+          ((and (null? (left bst)) (null? (right bst)))    (cons (entry bst) '()))
+          ((null? (left bst))                              (cons (entry bst) (preorder (right bst))))
+          ((null? (right bst))                             (cons (entry bst) (preorder (left bst))))
+          (else                                            (cons (entry bst) (append (preorder (left bst)) (preorder (right bst))))))))
 
 
-    ;cons elt (cons left-bst (cons right-bst '())))))
+(define inorder
+  (lambda (bst)
+    (cond ((null? bst) '())
+          ((and (null? (left bst)) (null? (right bst)))    (cons (entry bst) '()))
+          ((null? (left bst))                              (cons (entry bst) (inorder (right bst))))
+          ((null? (right bst))                             (append (inorder (left bst)) (cons (entry bst) '())))
+          (else                                            (append (inorder (left bst)) (cons (entry bst) (inorder (right bst))))))))
 
-(display (make-bst 5 '() '()))
+
+(define postorder
+  (lambda (bst)
+    (cond ((null? bst) '())
+          ((and (null? (left bst)) (null? (right bst)))    (cons (entry bst) '()))
+          ((null? (left bst))                              (append (postorder (right bst)) (cons (entry bst) '())))
+          ((null? (right bst))                             (append (postorder (left bst)) (cons (entry bst) '())))
+          (else                                            (append (append (postorder (left bst)) (postorder (right bst))) (cons (entry bst) '()))))))
