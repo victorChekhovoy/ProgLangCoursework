@@ -1,0 +1,40 @@
+(define curry3
+  (lambda (func)
+    (lambda (arg1)
+      (lambda (arg2)
+        (lambda (arg3)
+          (func arg1 arg2 arg3))))))
+
+(define uncurry3
+  (lambda (func)
+    (lambda (arg1 arg2 arg3)
+      (((func arg1) arg2) arg3))))
+
+(define uncurry
+  (lambda (func)
+    (lambda args
+      (if (not (procedure? (func (car args))))
+          (func (car args))
+          (apply (uncurry (func (car args))) (cdr args))))))
+
+
+
+
+
+(define curry-plus
+    (lambda ()
+        (lambda (x)
+            (lambda (y)
+                (+ x y)))))
+
+(define curry-plus-four
+    (lambda ()
+        (lambda (x)
+            (lambda (y)
+              (lambda (z)
+                  (lambda (w)
+                    (+ x y z w)))))))
+
+((uncurry (curry-plus)) 3 5)
+
+((uncurry (curry-plus-four)) 1 3 5 10)
