@@ -49,4 +49,4 @@
 (test-equal "set7" '(1 2 3 4 5) (sort (intersect '(1 2 3 4 5) '(1 2 3 4 5))< ))
 (test-equal "set8" '() (sort (intersect '(1 2 3 4 5) '()) <))
 
-(test-assert "exists3-ne" (not (exists (lambda (x) (
+(test-assert "exists3-ne" (not (exists (lambda (x) (< x 3)) '())))
