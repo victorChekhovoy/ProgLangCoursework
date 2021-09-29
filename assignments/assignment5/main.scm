@@ -49,6 +49,12 @@
             ((eq? (car list) value) #f)
             (else ((not-contains? (cdr list)) value))))))
 
+(define contains?
+  (lambda (list)
+    (lambda (value)
+      (cond ((null? list) #f)
+            ((eq? (car list) value) #t)
+            (else ((contains? (cdr list)) value))))))
 
 
 (define union
@@ -57,12 +63,16 @@
           ((null? S2) S1)
           (else (append (my-filter (not-contains? S1) S2) S1)))))
 
+(define intersect
+  (lambda (S1 S2)
+    (cond ((null? S1) '())
+          ((null? S2) '())
+          (else (my-filter (contains? S1) S2)))))
+
 ;(union '(1 2 3) '(4 5 6 7))
 (define S1 '(1 2 3))
 (define S2 '(4 5 6 7))
-(append (my-filter (not-contains? S1) S2) S1)
-
-
+((contains? S1) 4)
 
 
 
