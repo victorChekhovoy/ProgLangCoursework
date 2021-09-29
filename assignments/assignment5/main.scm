@@ -35,10 +35,6 @@
                   (lambda (w)
                     (+ x y z w)))))))
 
-((uncurry (curry-plus)) 3 5)
-
-((uncurry (curry-plus-four)) 1 3 5 10)
-
 (define my-filter
   (lambda (proc lst)
     (cond ((null? lst) '())
@@ -46,13 +42,39 @@
             (cons (car lst) (my-filter proc (cdr lst))))
             (else (my-filter proc (cdr lst))))))
 
-(my-filter odd? '(1 2 3 4)) ;--> (1 3)
-; does it need to be in order?
+(define not-contains?
+  (lambda (list)
+    (lambda (value)
+      (cond ((null? list) #t)
+            ((eq? (car list) value) #f)
+            (else ((not-contains? (cdr list)) value))))))
+
+
+
 (define union
   (lambda (S1 S2)
     (cond ((null? S1) S2)
           ((null? S2) S1)
-          (my-filter (member S1) S2)
-          (union S1 (cdr S2))
-            (else(union (cons (car S2) S1) (cdr S2))
-            )))
+          (else (append (my-filter (not-contains? S1) S2) S1)))))
+
+;(union '(1 2 3) '(4 5 6 7))
+(define S1 '(1 2 3))
+(define S2 '(4 5 6 7))
+(append (my-filter (not-contains? S1) S2) S1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;hi
