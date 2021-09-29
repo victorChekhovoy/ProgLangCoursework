@@ -72,13 +72,14 @@
 (define exists
   (lambda(pred lst)
     (cond ((null? lst) #f)
-          (if (equal? (my-filter(pred (car lst))) #t)
+          (if (null? (my-filter(pred (car lst))) #t)
               (exists pred (cdr lst))))))
 
 ;(union '(1 2 3) '(4 5 6 7))
-(define S1 '(1 2 3))
-(define S2 '(4 5 6 7))
-((contains? S1) 4)
+;(define S1 '(1 2 3))
+;(define S2 '(4 5 6 7))
+;((contains? S1) 4)
+
 
 
 
