@@ -46,4 +46,13 @@
             (cons (car lst) (my-filter proc (cdr lst))))
             (else (my-filter proc (cdr lst))))))
 
-(my-filter odd? '(1 2 3 4))
+(my-filter odd? '(1 2 3 4)) ;--> (1 3)
+; does it need to be in order?
+(define union
+  (lambda (S1 S2)
+    (cond ((null? S1) S2)
+          ((null? S2) S1)
+          (my-filter (member S1) S2)
+          (union S1 (cdr S2))
+            (else(union (cons (car S2) S1) (cdr S2))
+            )))
