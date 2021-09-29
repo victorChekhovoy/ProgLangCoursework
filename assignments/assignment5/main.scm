@@ -38,3 +38,12 @@
 ((uncurry (curry-plus)) 3 5)
 
 ((uncurry (curry-plus-four)) 1 3 5 10)
+
+(define my-filter
+  (lambda (proc lst)
+    (cond ((null? lst) '())
+          ((proc (car lst))
+            (cons (car lst) (my-filter proc (cdr lst))))
+            (else (my-filter proc (cdr lst))))))
+
+(my-filter odd? '(1 2 3 4))
