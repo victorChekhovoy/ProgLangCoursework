@@ -71,11 +71,11 @@
 ;; obtained from a preorder traversal
 (define preorder
   (lambda (bst)
-    (cond ((null? bst) '())
-          ((and (null? (left bst)) (null? (right bst)))    (list (entry bst)))
-          ((null? (left bst))                              (list (entry bst) (preorder (right bst)))
-          ((null? (right bst))                             (list (entry bst) (preorder (left bst))))
-          (else                                            (list (entry bst) (preorder (left bst)) (preorder (right bst))))))))
+    (if (null? bst)
+        '()
+        (remove '() (list (entry bst) (preorder (left bst)) (preorder (right bst)))))))
+
+(preorder '(1 (2 () ()) (3 () ())))
 
 ;; This function takes a binary search tree as an argument and returns its elements
 ;; obtained from an inorder traversal
@@ -111,3 +111,9 @@
             (if (null? (left bst))
               (list (entry bst) (make-bst v '() '()) (right bst))
               (list (entry bst) (insert v (left bst)) (right bst)))))))
+
+
+;((and (null? (left bst)) (null? (right bst)))    (list (entry bst)))
+;((null? (left bst))                              (list (entry bst) (preorder (right bst)))
+;((null? (right bst))                             (list (entry bst) (preorder (left bst))))
+;(else                                            (list (entry bst) (preorder (left bst)) (preorder (right bst))))))))
