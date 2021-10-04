@@ -100,7 +100,7 @@
     (if (null? bst)
         '()
         (append (postorder (left bst)) (append (postorder (right bst)) (list (entry bst)))))))
-(postorder '(1 (2 () ()) (3 () ())))
+        
 
 ;; This function takes a value and a binary search tree, and returns a new BST
 ;; identical to the input but with the value inserted at the right spot
