@@ -37,34 +37,13 @@
             (cons (car lst) (my-filter proc (cdr lst))))
             (else (my-filter proc (cdr lst))))))
 
-
-;; This is a helper function that takes a list as input and returns
-;; another function. In turn, the returned function takes a value as input
-;; and returns #t if the list doesn't contain the value and #f otherwise
-(define not-contains?
-  (lambda (list)
-    (lambda (value)
-      (cond ((null? list) #t)
-            ((eq? (car list) value) #f)
-            (else ((not-contains? (cdr list)) value))))))
-
-
-;; This is a helper function that takes a list as input and returns
-;; another function. In turn, the returned function takes a value as input
-;; and returns #t if the list contains the value and #f if it doesn't
-  (lambda (list)
-    (lambda (value)
-      (cond ((null? list) #f)
-            ((eq? (car list) value) #t)
-            (else ((contains? (cdr list)) value))))))
-
 ;; This function takes in two sets and returns the union of them. That is to say
 ;; the set that contains all items from both lists (without duplicates)
 (define union
   (lambda (S1 S2)
     (cond ((null? S1) S2)
           ((null? S2) S1)
-          (else (append (my-filter (not-contains? S1) S2) S1)))))
+          (else (append (my-filter (lambda (x) (not (member x S1))) S2) S1)))))
 
 ;; This function takes in two sets and returns the intersect of them. That is to
 ;; say the set that contains only the items that both sets have in common
@@ -72,8 +51,8 @@
   (lambda (S1 S2)
     (cond ((null? S1) '())
           ((null? S2) '())
-          (else (my-filter (contains? S1) S2)))))
-
+          (else (my-filter (lambda (x) (member x S1)) S2)))))
+(intersect '(1 2 3) '(4 5 6 7))
 ;; This function takes in a predicate and a list and returns #t if there is at
 ;; least one item in the list for which the predicate is true. Otherwise it
 ;; returns #f
