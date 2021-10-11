@@ -5,14 +5,16 @@
 
 
 void init(Vector *vector, int memorySize){
-  vector->array = malloc(memorySize * sizeof(int));
+  vector->array = (int *)malloc(memorySize * sizeof(int));
   vector->memorySize = memorySize;
   vector->size = 0;
 }
 
 void cleanup(Vector *vector){
+  if (vector->array != NULL){
   free(vector->array);
   vector->array = NULL;
+  }
 }
 
 void print(Vector *vector){
@@ -66,7 +68,7 @@ int delete(Vector *vector, int location){
     return 0;
   }
   int inserting;
-  get(vector, i, &inserting);
+  get(vector, vector->size - 1, &inserting);
   int copying;
   for (int i = (vector->size) - 1; i >= location; i--){
     get(vector, i - 1, &copying);
@@ -75,5 +77,9 @@ int delete(Vector *vector, int location){
   }
   vector->size--;
   return 1;
-  
+
+}
+
+int main(){
+  return 1;
 }
