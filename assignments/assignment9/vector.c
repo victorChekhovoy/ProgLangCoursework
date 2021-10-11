@@ -62,5 +62,18 @@ int insert(Vector *vector, int location, int value){
 }
 
 int delete(Vector *vector, int location){
-  return 0;
+  if ((location < 0) || (location > vector->size)){
+    return 0;
+  }
+  int inserting;
+  get(vector, i, &inserting);
+  int copying;
+  for (int i = (vector->size) - 1; i >= location; i--){
+    get(vector, i - 1, &copying);
+    insert(vector, i - 1, inserting);
+    inserting = copying;
+  }
+  vector->size--;
+  return 1;
+  
 }
