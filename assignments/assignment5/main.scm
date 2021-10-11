@@ -52,7 +52,7 @@
     (cond ((null? S1) '())
           ((null? S2) '())
           (else (my-filter (lambda (x) (member x S1)) S2)))))
-(intersect '(1 2 3) '(4 5 6 7))
+
 ;; This function takes in a predicate and a list and returns #t if there is at
 ;; least one item in the list for which the predicate is true. Otherwise it
 ;; returns #f
