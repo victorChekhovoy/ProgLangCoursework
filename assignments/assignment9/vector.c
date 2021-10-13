@@ -5,15 +5,17 @@
 
 
 void init(Vector *vector, int memorySize){
-  vector->array = (int *)malloc(memorySize * sizeof(int));
+  vector->array = (int *) malloc(memorySize * sizeof(int));
   vector->memorySize = memorySize;
   vector->size = 0;
 }
 
 void cleanup(Vector *vector){
   if (vector->array != NULL){
-  free(vector->array);
-  vector->array = NULL;
+    vector->size = 0;
+    vector->memorySize = 0;
+    free(vector->array);
+    vector->array = NULL;
   }
 }
 
@@ -52,7 +54,7 @@ int insert(Vector *vector, int location, int value){
     return 1;
   }
   else {
-    int *new_array = malloc(2 * sizeof(vector->array));
+    int *new_array = malloc(2 * (vector->memorySize) * sizeof(int));
     for (int i = 0; i < vector->size; i++){
       get(vector, i, &new_array[i]);
     }
@@ -67,19 +69,18 @@ int delete(Vector *vector, int location){
   if ((location < 0) || (location > vector->size)){
     return 0;
   }
-  int inserting;
-  get(vector, vector->size - 1, &inserting);
-  int copying;
-  for (int i = (vector->size) - 1; i >= location; i--){
-    get(vector, i - 1, &copying);
-    insert(vector, i - 1, inserting);
-    inserting = copying;
+  else {
+    int inserting;
+    get(vector, vector->size - 1, &inserting);
+    int copying = 0;
+    for (int i = (vector->size) - 2; i >= location; i--){
+      get(vector, i, &copying);
+      vector->array[i] = inserting;
+      inserting = copying;
+    }
+    vector->size--;
+    return 1;
   }
-  vector->size--;
-  return 1;
 
-}
 
-int main(){
-  return 1;
 }
