@@ -72,5 +72,3 @@ int get(Vector *vector, int location, int *value);
  that. */
 
 int delete(Vector *vector, int location);
-
-

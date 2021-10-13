@@ -8,11 +8,14 @@ import collections
 
 TestResult = collections.namedtuple('TestResult', ['output', 'error'])
 
-def runcmd(cmd, input_text=None):
+def runcmd(cmd):
   splitcmd=cmd.split()
-  return subprocess.run(splitcmd, input=input_text,
-                        stderr=subprocess.STDOUT,
-                        stdout=subprocess.PIPE, encoding='utf-8')
+  return subprocess.run(
+    splitcmd, 
+    stderr=subprocess.STDOUT,
+    stdout=subprocess.PIPE,
+    encoding='utf-8'
+  )
 
 def buildCode():
 
@@ -28,32 +31,35 @@ def buildCode():
 
   # Make sure that warning causes test to fail
   if ('warning' in compile_return.stdout):
-    return 'Test failed because of compiler warning.'
+    return 'Testing failed because of compiler warning.'
 
   return None
 
-def runIt(test_input):
+def runIt():
   error = buildCode()
   if error != None:
     return error
 
   # Run it once without valgrind
-  process_out = runcmd('./tester ' + test_input)
-  print(process_out.stdout)
+  print("Running tests without invoking valgrind...\n")
+  process_out = runcmd('./tester')
   if process_out.returncode != 0:
-    return "Runtime error."
+    return f"Runtime error! Use this command to view error message: clang -g -o tester vector.c tester.c; ./tester"
+  else:
+    print(vars(process_out))
+    print(process_out.stdout)
 
   # Run it again with valgrind
-  valgrind_test_results = run_tests_with_valgrind(
-                './tester ' + test_input)
+  print("Running tests with valgrind invoked...\n")
+  valgrind_test_results = run_tests_with_valgrind('./tester')
   if valgrind_test_results.error:
     error_encountered = True
     print('---VALGRIND ERROR---')
     print('Valgrind test results')
     print(valgrind_test_results.output)
-    return "Valgrind error."
+    return "Valgrind error (see report above)."
   else:
-    print('---VALGRIND NO ERROR---')
+    print('\tVALGRIND DETECTED NO MEMORY ERRORS!')
 
 
 
@@ -66,6 +72,7 @@ def run_tests_with_valgrind(executable_command) -> TestResult:
         '--show-leak-kinds=all ' + \
         '--errors-for-leak-kinds=all ' + \
         '--error-exitcode=99 ' + \
+        '--track-origins=yes ' + \
         executable_command
 
     try:
