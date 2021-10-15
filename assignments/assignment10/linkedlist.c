@@ -1,39 +1,20 @@
-#include <stdbool.h>
-#include "value.h"
 
-#ifndef _LINKEDLIST
-#define _LINKEDLIST
-
-typedef enum {CONS_TYPE, INT_TYPE, DOUBLE_TYPE, STR_TYPE, NULL_TYPE} valueType;
-
-struct Value {
-    valueType type;
-    union {
-        int i;
-        double d;
-        char *s;
-        struct ConsCell {
-            struct Value *car;
-            struct Value *cdr;
-        } c;
-    };
-};
-
-typedef struct Value Value;
-
+#include <stdlib.h>
+#include <stdio.h>
+#include "linkedlist.h"
 // Create a new NULL_TYPE value node.
 Value *makeNull(){
-  Value node;
-  node.type = NULL_TYPE;
+  Value *node;
+  node->type = NULL_TYPE;
   return node;
 }
 
 // Create a new CONS_TYPE value node.
 Value *cons(Value *newCar, Value *newCdr){
-  Value node;
-  node.type = CONS_TYPE;
-  node.c.car = newCar;
-  node.c.cdr = newCdr;
+  Value *node;
+  node->type = CONS_TYPE;
+  node->c.car = newCar;
+  node->c.cdr = newCdr;
   return node;
 }
 
@@ -68,6 +49,19 @@ void display(Value *list){
 // ANS: There won't be for this assignment. There will be later, but that will
 // be after we've got an easier way of managing memory.
 Value *reverse(Value *list){
+  if ((list == NULL) || (list->type == NULL_TYPE)) {
+    return makeNull();
+  }
+  if ((cdr(list) == NULL) || (cdr(list)->type == NULL_TYPE)){
+    Value newCar = {.type = CONS_TYPE, .c.car = car(list), .c.cdr = cdr(list)};
+    return cons(&newCar, makeNull());
+  }
+  else {
+      Value reversed_element = {.type = CONS_TYPE, .c.car = car(list), .c.cdr = cdr(list)};
+      reversed_element.c.cdr = reverse(cdr(list));
+      return &reversed_element;
+  }
+
   // base case, node is null -> return null node
   // last node left (cdr is null) -> true base case
 
@@ -92,19 +86,40 @@ void cleanup(Value *list);
 
 // Utility to make it less typing to get car value. Use assertions to make sure
 // that this is a legitimate operation.
-Value *car(Value *list);
+Value *car(Value *list){
+  if (list->type == CONS_TYPE){
+    return (list->c).car;
+  }
+  else {
+    return makeNull();
+  }
+}
 
 // Utility to make it less typing to get cdr value. Use assertions to make sure
 // that this is a legitimate operation.
-Value *cdr(Value *list);
+Value *cdr(Value *list){
+  if (list->type == CONS_TYPE){
+    return list->c.cdr;
+  }
+  else {
+    return makeNull();
+  }
+}
 
 // Utility to check if pointing to a NULL_TYPE value. Use assertions to make sure
 // that this is a legitimate operation.
-bool isNull(Value *value);
+bool isNull(Value *value){
+  if (value->type == NULL_TYPE){
+    return true;
+  }
+  return false;
+}
 
 // Measure length of list. Use assertions to make sure that this is a legitimate
 // operation.
-int length(Value *value);
-
-
-#endif
+int length(Value *value){
+  if (isNull(car(value))){
+    return 0;
+  }
+  return 1 + length(cdr(value));
+}
