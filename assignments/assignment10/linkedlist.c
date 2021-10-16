@@ -11,10 +11,14 @@ Value *makeNull(){
 
 // Create a new CONS_TYPE value node.
 Value *cons(Value *newCar, Value *newCdr){
-  Value *node;
+  printf("allocating memory\n");
+  Value *node = malloc(sizeof(Value));
+  printf("Allocated\n");
   node->type = CONS_TYPE;
-  node->c.car = newCar;
-  node->c.cdr = newCdr;
+  (node->c).car = malloc(sizeof(Value));
+  (node->c).car = newCar;
+  (node->c).cdr = malloc(sizeof(Value));
+  (node->c).cdr = newCdr;
   return node;
 }
 
@@ -57,7 +61,7 @@ Value *reverse(Value *list){
     return cons(&newCar, makeNull());
   }
   else {
-      Value *reversed_element;
+      Value *reversed_element = malloc(sizeof(Value));
       reversed_element->type = CONS_TYPE;
       reversed_element->c.car = car(list);
       reversed_element->c.cdr = reverse(cdr(list));
@@ -85,10 +89,13 @@ Value *reverse(Value *list){
 // ANS: There won't be for this assignment. There will be later, but that will
 // be after we've got an easier way of managing memory.
 void cleanup(Value *list){
-  Value *next_to_clean = cdr(list);
-  free(car(list));
-  cleanup(next_to_clean);
-  free(list);
+  if (! (list->type == NULL_TYPE)){
+    Value *next_to_clean  = malloc(sizeof(Value));
+    next_to_clean = cdr(list);
+    free(car(list));
+    cleanup(next_to_clean);
+    free(list);
+  }
 }
 
 // Utility to make it less typing to get car value. Use assertions to make sure
