@@ -1,19 +1,17 @@
-
+#include "value.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "linkedlist.h"
 // Create a new NULL_TYPE value node.
 Value *makeNull(){
-  Value *node;
+  Value *node = malloc(sizeof(Value));
   node->type = NULL_TYPE;
   return node;
 }
 
 // Create a new CONS_TYPE value node.
 Value *cons(Value *newCar, Value *newCdr){
-  printf("allocating memory\n");
   Value *node = malloc(sizeof(Value));
-  printf("Allocated\n");
   node->type = CONS_TYPE;
   (node->c).car = malloc(sizeof(Value));
   (node->c).car = newCar;
@@ -27,20 +25,21 @@ Value *cons(Value *newCar, Value *newCdr){
 void display(Value *list){
   switch (list->type) {
       case INT_TYPE:
-          printf("%i\n", list->i);
+          printf("%i -> ", list->i);
           break;
       case DOUBLE_TYPE:
-          printf("%g\n", list->d);
+          printf("%g -> ", list->d);
           break;
       case STR_TYPE:
-          printf("%s\n", list->s);
+          printf("%s -> ", list->s);
           break;
       case CONS_TYPE:
           display(list->c.car);
           display(list->c.cdr);
           break;
       case NULL_TYPE:
-          printf("NULL\n");
+          printf("NULL -> ");
+          break;
   }
 }
 
@@ -53,26 +52,29 @@ void display(Value *list){
 // ANS: There won't be for this assignment. There will be later, but that will
 // be after we've got an easier way of managing memory.
 Value *reverse(Value *list){
-  if ((list == NULL) || (list->type == NULL_TYPE)) {
+  if (isNull(car(list))) {
     return makeNull();
   }
-  if ((cdr(list) == NULL) || (cdr(list)->type == NULL_TYPE)){
-    Value newCar = {.type = CONS_TYPE, .c.car = car(list), .c.cdr = cdr(list)};
-    return cons(&newCar, makeNull());
+  if (isNull(cdr(list))){
+    Value *newCar =  malloc(sizeof(Value));
+    newCar->type = CONS_TYPE;
+    newCar->c.car = car(list);
+    //newCar->c.cdr = cdr(list);
+    return cons(car(list), makeNull());
   }
   else {
       Value *reversed_element = malloc(sizeof(Value));
+      reversed_element =
+      cons(reverse(cdr(list)), cons(car(list), makeNull()));
+      /*reversed_element->type = CONS_TYPE;
+      reversed_element->c.car = reverse(cdr(list));
+      reversed_element->c.cdr = car(list);
       reversed_element->type = CONS_TYPE;
       reversed_element->c.car = car(list);
-      reversed_element->c.cdr = reverse(cdr(list));
+      reversed_element->c.cdr = reverse(cdr(list));*/
       return reversed_element;
   }
 
-  // base case, node is null -> return null node
-  // last node left (cdr is null) -> true base case
-
-  // recursive case, take the car and have it point to the recursive call
-  // on the cdr
 }
 
 
@@ -89,7 +91,7 @@ Value *reverse(Value *list){
 // ANS: There won't be for this assignment. There will be later, but that will
 // be after we've got an easier way of managing memory.
 void cleanup(Value *list){
-  if (! (list->type == NULL_TYPE)){
+  if (!(list->type == NULL_TYPE)){
     Value *next_to_clean  = malloc(sizeof(Value));
     next_to_clean = cdr(list);
     free(car(list));
