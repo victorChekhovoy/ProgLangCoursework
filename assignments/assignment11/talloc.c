@@ -1,44 +1,51 @@
 #include <stdio.h>
 #include "talloc.h"
+#include "linkedlist.h"
 
 
 Value *activeList = NULL;
 
 void *talloc(size_t size){
-  void *outputPointer = malloc(size);
   if (activeList == NULL){
     activeList = malloc(sizeof(Value));
-    activeList->type = CONS_TYPE;
-    activeList->c.car = outputPointer;
-    activeList->c.cdr = NULL;
+    activeList->type = NULL_TYPE;
   }
-  else {
-    Value *newNode = malloc(sizeof(Value));
-    newNode->type = CONS_TYPE;
-    newNode->c.car = outputPointer;
-    newNode->c.cdr = activeList;
-    activeList = newNode;
-  }
+  void *outputPointer = malloc(size);
+  Value *newNode = malloc(sizeof(Value));
+  Value *pointerNode = malloc(sizeof(Value));
+  pointerNode->type = PTR_TYPE;
+  pointerNode->p = outputPointer;
+  newNode->type = CONS_TYPE;
+  newNode->c.car = pointerNode;
+  newNode->c.cdr = activeList;
+  activeList = newNode;
 
   return outputPointer;
 }
 
 void cleanNode(Value *node){
-  int type = node->type;
-  switch (type){
-    case STR_TYPE:
-      free(node->s);
-      break;
-    case PTR_TYPE:
-      free(node->p);
-      break;
+  if (node != NULL){
+    int type = node->type;
+    printf("Node type: %i\n", type);
+    switch (type){
+      case STR_TYPE:
+        free(node->s);
+        break;
+      case PTR_TYPE:
+        free(node->p);
+        break;
+      case CONS_TYPE:
+        cleanNode(node->c.car);
+        cleanNode(node->c.cdr);
+        break;
+    }
+    free(node);
   }
-  free(node);
-  return;
 }
 
 
 void tfree(){
+  /*display(activeList);
   if (activeList == NULL){
     return;
   }
@@ -48,10 +55,12 @@ void tfree(){
   }
   else{
     cleanNode(activeList->c.car);
+    //free(activeList);
     activeList = activeList->c.cdr;
     tfree();
     return;
-  }
+  }*/
+  cleanNode(activeList);
 }
 
 
