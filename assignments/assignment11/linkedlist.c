@@ -4,11 +4,14 @@
 #include "linkedlist.h"
 #include <string.h>
 #include <assert.h>
+#include "talloc.h"
+
+
 
 // Create a pointer to a new NULL_TYPE Value (hint: where in memory will
 // the value have to live?)
 Value *makeNull(){
-  Value *node = malloc(sizeof(Value));
+  Value *node = talloc(sizeof(Value));
   node->type = NULL_TYPE;
   return node;
 }
@@ -21,7 +24,7 @@ bool isNull(Value *value){
 }
 // Create a pointer to a new CONS_TYPE Value
 Value *cons(Value *newCar, Value *newCdr){
-  Value *node = malloc(sizeof(Value));
+  Value *node = talloc(sizeof(Value));
   node->type = CONS_TYPE;
   (node->c).car = newCar;
   (node->c).cdr = newCdr;
@@ -56,26 +59,38 @@ Value *cdr(Value *list){
 // format of a Scheme list -- e.g., ( 33 "lol" 9.9 ). It's okay
 // to just use printf here, though you'll have to add the quotes in
 // yourself, for strings.
-void display(Value *list){
+void display_inner(Value* list){
   switch (list->type) {
       case INT_TYPE:
-          printf("%i -> ", list->i);
+          printf("%i ", list->i);
           break;
       case DOUBLE_TYPE:
-          printf("%g -> ", list->d);
+          printf("%g ", list->d);
           break;
       case STR_TYPE:
-          printf("%s -> ", list->s);
+          printf("\"%s\" ", list->s);
           break;
       case CONS_TYPE:
-          display(list->c.car);
-          display(list->c.cdr);
+          display_inner(list->c.car);
+          display_inner(list->c.cdr);
           break;
       case NULL_TYPE:
-          printf("NULL\n");
+          //printf("NULL\n");
+          break;
+      case PTR_TYPE:
+          display_inner(list);
           break;
   }
 }
+
+
+void display(Value *list){
+  printf("(");
+  display_inner(list);
+  printf(")\n");
+}
+
+
 // Return a new list that is the reverse of the one that is passed in. None of
 // the values in the original linked list should be copied this time. Instead,
 // create a new linked list of CONS_TYPE nodes whose car values point to the
@@ -86,7 +101,7 @@ Value *reverseHelper(Value *list, Value *reversed_list){
   }
   else {
       Value *current_car = list->c.car;
-      Value *new_car = malloc(sizeof(Value));
+      Value *new_car = talloc(sizeof(Value));
       int current_type = current_car->type;
       new_car->type = current_type;
       if (current_type == INT_TYPE){
@@ -98,7 +113,7 @@ Value *reverseHelper(Value *list, Value *reversed_list){
         new_car->d = new_car_value;
       }
       if (current_type == STR_TYPE){
-        char *new_car_value = malloc(sizeof(char) * (strlen(current_car->s) + 1));
+        char *new_car_value = talloc(sizeof(char) * (strlen(current_car->s) + 1));
         strcpy(new_car_value, current_car->s);
         new_car->s = new_car_value;
       }
