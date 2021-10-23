@@ -11,7 +11,7 @@
 // Create a pointer to a new NULL_TYPE Value (hint: where in memory will
 // the value have to live?)
 Value *makeNull(){
-  Value *node = talloc(sizeof(Value));
+  Value *node = (Value *) talloc(sizeof(Value));
   node->type = NULL_TYPE;
   return node;
 }
@@ -24,7 +24,7 @@ bool isNull(Value *value){
 }
 // Create a pointer to a new CONS_TYPE Value
 Value *cons(Value *newCar, Value *newCdr){
-  Value *node = talloc(sizeof(Value));
+  Value *node = (Value *) talloc(sizeof(Value));
   node->type = CONS_TYPE;
   (node->c).car = newCar;
   (node->c).cdr = newCdr;
@@ -78,7 +78,7 @@ void display_inner(Value* list){
           //printf("NULL\n");
           break;
       case PTR_TYPE:
-          display_inner(list);
+          printf("<%p> ", list->p);
           break;
   }
 }
@@ -101,7 +101,7 @@ Value *reverseHelper(Value *list, Value *reversed_list){
   }
   else {
       Value *current_car = list->c.car;
-      Value *new_car = talloc(sizeof(Value));
+      Value *new_car = (Value *) talloc(sizeof(Value));
       int current_type = current_car->type;
       new_car->type = current_type;
       if (current_type == INT_TYPE){
@@ -113,7 +113,7 @@ Value *reverseHelper(Value *list, Value *reversed_list){
         new_car->d = new_car_value;
       }
       if (current_type == STR_TYPE){
-        char *new_car_value = talloc(sizeof(char) * (strlen(current_car->s) + 1));
+        char *new_car_value = (char *) talloc(sizeof(char) * (strlen(current_car->s) + 1));
         strcpy(new_car_value, current_car->s);
         new_car->s = new_car_value;
       }
@@ -134,13 +134,13 @@ Value *reverse(Value *list){
 // Use assertions to make sure that this is a legitimate operation.
 int length(Value *value){
   assert(value != NULL);
-  Value* current_car = car(value);
-  Value* current_cdr = cdr(value);
-  if (isNull(current_car)){
-    free(current_car);
-    free(current_cdr);
+  //Value* current_car = car(value);
+  //Value* current_cdr = cdr(value);
+  if (isNull(car(value))){
+    //free(current_car);
+    //free(current_cdr);
     return 0;
   }
-  int output_length = 1 + length(current_cdr);
+  int output_length = 1 + length(cdr(value));
   return output_length;
 }

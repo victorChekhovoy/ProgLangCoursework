@@ -26,41 +26,36 @@ void *talloc(size_t size){
 void cleanNode(Value *node){
   if (node != NULL){
     int type = node->type;
-    printf("Node type: %i\n", type);
+
     switch (type){
       case STR_TYPE:
-        free(node->s);
+        if (node->s != NULL){
+          free(node->s);
+        }
+        node->s = NULL;
         break;
       case PTR_TYPE:
-        free(node->p);
+        if (node->p != NULL){
+          free(node->p);
+        }
+        node->p = NULL;
         break;
       case CONS_TYPE:
         cleanNode(node->c.car);
         cleanNode(node->c.cdr);
+        node->c.car = NULL;
+        node->c.cdr = NULL;
         break;
     }
     free(node);
+    node = NULL;
   }
 }
 
 
 void tfree(){
-  /*display(activeList);
-  if (activeList == NULL){
-    return;
-  }
-  if (activeList->c.car == NULL){
-    free(activeList);
-    return;
-  }
-  else{
-    cleanNode(activeList->c.car);
-    //free(activeList);
-    activeList = activeList->c.cdr;
-    tfree();
-    return;
-  }*/
   cleanNode(activeList);
+  activeList = NULL;
 }
 
 
