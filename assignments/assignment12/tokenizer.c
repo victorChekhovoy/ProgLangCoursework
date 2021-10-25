@@ -9,6 +9,7 @@
 #define LETTERS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define NUMBERS "1234567890"
 #define MAX_STR_LEN 301
+#define TERMINATORS "() \n"
 
 char peek(){
   char output = (char) fgetc(stdin);
@@ -64,12 +65,43 @@ Value *makeDouble(double value){
   return newSymbol;
 }
 
+char* readString(){
+  char *output = talloc(MAX_STR_LEN);
+  current = fgetc(stdin);
+  int index = 0;
+  while (current != EOF && current != '"' && current != '\''){
+    output[index] = current;
+    index++;
+    current = fgetc(stdin);
+  }
+  output[index+1] = '\0';
+  return output;
+}
+
 char *readMultiChar(){
-  return "a";
+  char *output = talloc(MAX_STR_LEN);
+  char current = fgetc(stdin);
+  if (current == '"'){
+    strcpy(output, readString());
+  }
+  else{
+    int index = 0;
+    while (current != EOF && strchr(TERMINATORS, current) == NULL){
+      output[index] = current;
+      index++;
+      current = fgetc(stdin);
+    }
+    output[index+1] = '\0';
+  
+  return output;
 }
 
 int determineType(char *symbol){
   return NULL_TYPE;
+}
+
+Value *makeNewSymbol(int type, char *rawSymbol){
+  return makeNull();
 }
 // Read source code that is input via stdin, and return a linked list consisting of the
 // tokens in the source code. Each token is represented as a Value struct instance, where
@@ -82,17 +114,20 @@ Value *tokenize(){
     char nextChar = (char)fgetc(stdin);
 
     while (nextChar != EOF){
-        if (nextChar == ')'){
+        if (nextChar == ')'){   //TODO: what if it's in a string?
           tokens = cons(makeClosed(), tokens);
         }
         if (nextChar == '('){
           tokens = cons(makeOpen(), tokens);
         }
         else{
-          char *currentSymbol = talloc(MAX_STR_LEN);
+          char *currentRawSymbol = talloc(MAX_STR_LEN);
           strcpy(currentSymbol, readMultiChar());
           int type = determineType(currentSymbol);
 
+          Value *currentSymbol = makeNewSymbol(type, currentRawSymbol);
+          tokens = cons(currentSymbol, tokens);
+        }
 
         }
         nextChar = (char)fgetc(stdin);
