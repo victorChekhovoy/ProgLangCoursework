@@ -5,6 +5,8 @@
 
 Value *activeList = NULL;
 
+// This function works like malloc: allocating memory of the given size and storing a pointer
+// to that memory
 void *talloc(size_t size){
   if (activeList == NULL){
     activeList = malloc(sizeof(Value));
@@ -23,6 +25,8 @@ void *talloc(size_t size){
   return outputPointer;
 }
 
+// This function takes in a pointer to a node and (depending on the type) dereferences
+// and replaces with NULL. In the case of a CONS_TYPE, this is done for both the car and cdr
 void cleanNode(Value *node){
   if (node != NULL){
     int type = node->type;
@@ -52,13 +56,13 @@ void cleanNode(Value *node){
   }
 }
 
-
+// This function calls cleanNode on the pointer and then sets the pointer itself to NULL
 void tfree(){
   cleanNode(activeList);
   activeList = NULL;
 }
 
-
+// This function will free via tfree and then exit
 void texit(int status){
   tfree();
   exit(status);
