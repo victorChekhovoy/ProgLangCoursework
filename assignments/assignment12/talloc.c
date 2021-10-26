@@ -46,6 +46,12 @@ void cleanNode(Value *node){
         node->c.car = NULL;
         node->c.cdr = NULL;
         break;
+      case SYMBOL_TYPE:
+        if (node->s != NULL){
+          free(node->s);
+        }
+        node->s = NULL;
+        break;
     }
     free(node);
     node = NULL;

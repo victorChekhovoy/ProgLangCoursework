@@ -37,7 +37,7 @@ Value *makeBool(char *value){
   if (value[1] == 't'){
     newBool->i = 1;
   }
-  if (value[1] == 'f'){
+  else if (value[1] == 'f'){
     newBool->i = 0;
   }
   else{
@@ -47,10 +47,10 @@ Value *makeBool(char *value){
 }
 
 Value *makeSymbol(char *value){
-  Value *newSymbol = (Value *)talloc(sizeof(Value));
+  Value *newSymbol = talloc(sizeof(Value));
   newSymbol->type = SYMBOL_TYPE;
   newSymbol->s = talloc(sizeof(value));
-  strcpy(newSymbol->s, value);
+  newSymbol->s = value;
   return newSymbol;
 }
 
@@ -85,29 +85,47 @@ char* readString(){
   char *output = talloc(MAX_STR_LEN);
   char current = (char) fgetc(stdin);
   int index = 0;
-  while (current != EOF && current != '"' && current != '\''){
-    output[index] = current;
-    index++;
-    current = fgetc(stdin);
+  output[index++] = '"';
+  while (current != EOF && current != '"' && current != '\n'){
+    output[index++] = current;
+    current = (char) fgetc(stdin);
   }
   output[index+1] = '\0';
   return output;
 }
 
-char *readMultiChar(int *index){
+char* readComment(){
   char *output = talloc(MAX_STR_LEN);
   char current = (char) fgetc(stdin);
-  if (current == '"'){
-    strcpy(output, readString());
+  int index = 0;
+  output[index++] = ';';
+  while (current != EOF && current != '\n'){
+    output[index] = current;
+    index++;
+    current = (char) fgetc(stdin);
+  }
+  output[index+1] = '\0';
+  return output;
+}
+
+char *readMultiChar(char currentChar, int *index){
+  char *output;
+  if (currentChar == '"'){
+    output = readString();
+  }
+  else if (currentChar == ';'){
+    output = readComment();
   }
   else{
+    output = talloc(MAX_STR_LEN);
     *index = 0;
-    while (current != EOF && strchr(TERMINATORS, current) == NULL){
-      output[*index] = current;
+    while (currentChar != EOF && strchr(TERMINATORS, currentChar) == NULL){
+      output[*index] = currentChar;
       (*index)++;
-      current = (char) fgetc(stdin);
+      currentChar = (char) fgetc(stdin);
     }
     output[(*index)++] = '\0';
+    printf("Result: %s;\n", output);
   }
   return output;
 }
@@ -139,6 +157,9 @@ int determineType(char *symbol, int length){
   if ((symbol[0] == '"') && (symbol[length - 1] == '"')){
     return STR_TYPE;
   }
+  if (symbol[0] == ';'){
+    return NULL_TYPE;
+  }
   if (validNumber(symbol, false)){
     return INT_TYPE;
   }
@@ -148,7 +169,7 @@ int determineType(char *symbol, int length){
   if ((length == 2) && (symbol[0] == '#') && ((symbol[1] == 't') || (symbol[1] == 'f'))){
     return BOOL_TYPE;
   }
-    return SYMBOL_TYPE;
+  return SYMBOL_TYPE;
 }
 
 Value *makeNewSymbol(int type, char *rawSymbol, int length){
@@ -186,24 +207,25 @@ Value *tokenize(){
     char nextChar = (char)fgetc(stdin);
 
     while (nextChar != EOF){
-        if (nextChar == ')'){   //TODO: what if it's in a string?
+        if (nextChar == ')'){
           tokens = cons(makeClosed(), tokens);
         }
-        if (nextChar == '('){
+        else if (nextChar == '('){
           tokens = cons(makeOpen(), tokens);
         }
-        else{
-          char *currentRawSymbol = talloc(MAX_STR_LEN);
-          int *index = talloc(sizeof(int));
-          strcpy(currentRawSymbol, readMultiChar(index));
-          int type = determineType(currentRawSymbol, *index);
+        else if ((nextChar != '\n') && (nextChar != ' ')){
+          char *currentRawSymbol;
+          int *symbolLength = talloc(sizeof(int));
+          currentRawSymbol = readMultiChar(nextChar, symbolLength);
+          int type = determineType(currentRawSymbol, *symbolLength);
+          Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
 
-          Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *index);
-          tokens = cons(currentSymbol, tokens);
+          if (!isNull(currentSymbol)){
+            tokens = cons(currentSymbol, tokens);
+          }
         }
         nextChar = (char)fgetc(stdin);
       }
-    // Reverse the tokens list, to put it back in order
     Value *reversedList = reverse(tokens);
     return reversedList;
 }
@@ -237,6 +259,7 @@ void displayTokens(Value *list){
         break;
       default:
         printf("WRONG TYPE\n");
+        break;
     }
     return displayTokens(cdr(list));
   }
