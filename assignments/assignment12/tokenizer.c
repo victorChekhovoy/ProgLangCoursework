@@ -56,7 +56,7 @@ Value *makeSymbol(char *value){
 
 Value *makeInt(char *value){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
-  int numericValue = strtol(value, NULL);
+  int numericValue = strtol(value, NULL, 10);
   newSymbol->type = INT_TYPE;
   newSymbol->i = numericValue;
   return newSymbol;
@@ -78,6 +78,7 @@ Value *makeString(char *rawValue, int length){
     newSymbol->s[i-1] = rawValue[i];
   }
   newSymbol->s[length-1] = '\0';
+  return newSymbol;
 }
 
 char* readString(){
@@ -173,6 +174,7 @@ Value *makeNewSymbol(int type, char *rawSymbol, int length){
   }
   return output;
 }
+
 // Read source code that is input via stdin, and return a linked list consisting of the
 // tokens in the source code. Each token is represented as a Value struct instance, where
 // the Value's type is set to represent the token type, while the Value's actual value
