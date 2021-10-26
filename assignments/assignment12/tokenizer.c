@@ -194,7 +194,7 @@ Value *tokenize(){
         }
         else{
           char *currentRawSymbol = talloc(MAX_STR_LEN);
-          int *index;
+          int *index = talloc(sizeof(int));
           strcpy(currentRawSymbol, readMultiChar(index));
           int type = determineType(currentRawSymbol, *index);
 
