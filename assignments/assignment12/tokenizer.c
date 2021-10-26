@@ -31,11 +31,14 @@ Value *makeClosed(){
   return newClosed;
 }
 
-Value *makeBool(int value){
+Value *makeBool(char *value){
   Value *newBool = (Value *)talloc(sizeof(Value));
   newBool->type = BOOL_TYPE;
-  if ((value == 0) || (value == 1)){
-    newBool->i = value;
+  if (value[1] == 't'){
+    newBool->i = 1;
+  }
+  if (value[1] == 'f'){
+    newBool->i = 0;
   }
   else{
     newBool->i = -1;
@@ -43,7 +46,7 @@ Value *makeBool(int value){
   return newBool;
 }
 
-Value *makeSymbol(char* value){
+Value *makeSymbol(char *value){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
   newSymbol->type = SYMBOL_TYPE;
   newSymbol->s = talloc(sizeof(value));
@@ -51,23 +54,35 @@ Value *makeSymbol(char* value){
   return newSymbol;
 }
 
-Value *makeInt(int value){
+Value *makeInt(char *value){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
+  int numericValue = strtol(value, NULL);
   newSymbol->type = INT_TYPE;
-  newSymbol->i = value;
+  newSymbol->i = numericValue;
   return newSymbol;
 }
 
-Value *makeDouble(double value){
+Value *makeDouble(char *value){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
+  double numericValue = strtod(value, NULL);
   newSymbol->type = DOUBLE_TYPE;
-  newSymbol->d = value;
+  newSymbol->d = numericValue;
   return newSymbol;
+}
+
+Value *makeString(char *rawValue, int length){
+  Value *newSymbol = (Value *)talloc(sizeof(Value));
+  newSymbol->type = STR_TYPE;
+  newSymbol->s = talloc(sizeof(char)*(length-1));
+  for (int i = 1; i < length - 1; i++){
+    newSymbol->s[i-1] = rawValue[i];
+  }
+  newSymbol->s[length-1] = '\0';
 }
 
 char* readString(){
   char *output = talloc(MAX_STR_LEN);
-  current = fgetc(stdin);
+  char current = (char) fgetc(stdin);
   int index = 0;
   while (current != EOF && current != '"' && current != '\''){
     output[index] = current;
@@ -78,30 +93,85 @@ char* readString(){
   return output;
 }
 
-char *readMultiChar(){
+char *readMultiChar(int *index){
   char *output = talloc(MAX_STR_LEN);
-  char current = fgetc(stdin);
+  char current = (char) fgetc(stdin);
   if (current == '"'){
     strcpy(output, readString());
   }
   else{
-    int index = 0;
+    *index = 0;
     while (current != EOF && strchr(TERMINATORS, current) == NULL){
-      output[index] = current;
-      index++;
-      current = fgetc(stdin);
+      output[*index] = current;
+      (*index)++;
+      current = (char) fgetc(stdin);
     }
-    output[index+1] = '\0';
-  
+    output[(*index)++] = '\0';
+  }
   return output;
 }
 
-int determineType(char *symbol){
-  return NULL_TYPE;
+bool validNumber(char *symbol, bool dots_allowed){
+  int index = 0;
+  int dots = dots_allowed;
+  if (symbol[0] == '-'){
+    index++;
+  }
+  while (symbol[index] != '\0'){
+    if (symbol[index] == '.'){
+      dots--;
+    }
+    else if (strchr(NUMBERS, symbol[index]) == NULL){
+      return false;
+    }
+    index++;
+  }
+  if (dots >= 0){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 
-Value *makeNewSymbol(int type, char *rawSymbol){
-  return makeNull();
+int determineType(char *symbol, int length){
+  if ((symbol[0] == '"') && (symbol[length - 1] == '"')){
+    return STR_TYPE;
+  }
+  if (validNumber(symbol, false)){
+    return INT_TYPE;
+  }
+  if (validNumber(symbol, true)){
+    return DOUBLE_TYPE;
+  }
+  if ((length == 2) && (symbol[0] == '#') && ((symbol[1] == 't') || (symbol[1] == 'f'))){
+    return BOOL_TYPE;
+  }
+    return SYMBOL_TYPE;
+}
+
+Value *makeNewSymbol(int type, char *rawSymbol, int length){
+  Value *output;
+  switch(type){
+    case STR_TYPE:
+      output = makeString(rawSymbol, length);
+      break;
+    case INT_TYPE:
+      output = makeInt(rawSymbol);
+      break;
+    case DOUBLE_TYPE:
+      output = makeDouble(rawSymbol);
+      break;
+    case BOOL_TYPE:
+      output = makeBool(rawSymbol);
+      break;
+    case SYMBOL_TYPE:
+      output = makeSymbol(rawSymbol);
+      break;
+    default:
+      output = makeNull();
+  }
+  return output;
 }
 // Read source code that is input via stdin, and return a linked list consisting of the
 // tokens in the source code. Each token is represented as a Value struct instance, where
@@ -122,17 +192,15 @@ Value *tokenize(){
         }
         else{
           char *currentRawSymbol = talloc(MAX_STR_LEN);
-          strcpy(currentSymbol, readMultiChar());
-          int type = determineType(currentSymbol);
+          int *index;
+          strcpy(currentRawSymbol, readMultiChar(index));
+          int type = determineType(currentRawSymbol, *index);
 
-          Value *currentSymbol = makeNewSymbol(type, currentRawSymbol);
+          Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *index);
           tokens = cons(currentSymbol, tokens);
         }
-
-        }
         nextChar = (char)fgetc(stdin);
-    }
-
+      }
     // Reverse the tokens list, to put it back in order
     Value *reversedList = reverse(tokens);
     return reversedList;
