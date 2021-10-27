@@ -74,7 +74,7 @@ Value *makeString(char *rawValue, int length){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
   newSymbol->type = STR_TYPE;
   newSymbol->s = talloc(sizeof(char)*(length-1));
-  for (int i = 1; i < length - 1; i++){
+  for (int i = 1; i < length-1; i++){
     newSymbol->s[i-1] = rawValue[i];
   }
   newSymbol->s[length-1] = '\0';
@@ -90,6 +90,7 @@ char* readString(){
     output[index++] = current;
     current = (char) fgetc(stdin);
   }
+  output[index] = '"';
   output[index+1] = '\0';
   return output;
 }
@@ -125,7 +126,6 @@ char *readMultiChar(char currentChar, int *index){
       currentChar = (char) fgetc(stdin);
     }
     output[(*index)++] = '\0';
-    printf("Result: %s;\n", output);
   }
   return output;
 }
@@ -154,7 +154,10 @@ bool validNumber(char *symbol, bool dots_allowed){
 }
 
 int determineType(char *symbol, int length){
-  if ((symbol[0] == '"') && (symbol[length - 1] == '"')){
+  printf("\n\nSymbol: %s\n", symbol);
+  printf("Length: %i", length);
+  printf("First and last character: %c, %c\n", symbol[0], symbol[length-2]);
+  if ((symbol[0] == '"') && (symbol[length] == '"')){
     return STR_TYPE;
   }
   if (symbol[0] == ';'){
@@ -217,6 +220,7 @@ Value *tokenize(){
           char *currentRawSymbol;
           int *symbolLength = talloc(sizeof(int));
           currentRawSymbol = readMultiChar(nextChar, symbolLength);
+          *symbolLength = *symbolLength - 1;
           int type = determineType(currentRawSymbol, *symbolLength);
           Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
 
