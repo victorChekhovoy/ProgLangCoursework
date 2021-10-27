@@ -97,6 +97,9 @@ void display_inner(Value* list){
       case SYMBOL_TYPE:
           printf("%s", list->s);
           break;
+      case ERROR_TYPE:
+          printf("%s", list->s);
+          break;
       default:
           break;
   }
@@ -131,7 +134,7 @@ Value *reverseHelper(Value *list, Value *reversed_list){
         double new_car_value = current_car->d;
         new_car->d = new_car_value;
       }
-      if ((current_type == STR_TYPE) || (current_type == SYMBOL_TYPE)){
+      if ((current_type == STR_TYPE) || (current_type == SYMBOL_TYPE) || (current_type == ERROR_TYPE)){
         char *new_car_value = (char *) talloc(sizeof(char) * (strlen(current_car->s) + 1));
         strcpy(new_car_value, current_car->s);
         new_car->s = new_car_value;
