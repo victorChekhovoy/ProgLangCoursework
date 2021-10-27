@@ -120,17 +120,23 @@ char *readMultiChar(char currentChar, int *index){
     while (currentChar != EOF && strchr(TERMINATORS, currentChar) == NULL){
       output[*index] = currentChar;
       (*index)++;
-      currentChar = (char) fgetc(stdin);
+      currentChar = (char) peek();
+      if ((currentChar != ')') && (currentChar != '(')){
+        currentChar = (char) fgetc(stdin);
+      }
     }
     output[(*index)+1] = '\0';
   }
   return output;
 }
 
-bool validNumber(char *symbol, bool dots_allowed){
+bool validNumber(char *symbol, int length, bool dots_allowed){
   int index = 0;
   int dots = dots_allowed;
   if (symbol[0] == '-'){
+    if (length == 1){
+      return false;
+    }
     index++;
   }
   while (symbol[index] != '\0'){
@@ -158,10 +164,10 @@ int determineType(char *symbol, int length){
   if (symbol[0] == ';'){
     return NULL_TYPE;
   }
-  if (validNumber(symbol, false)){
+  if (validNumber(symbol, length, false)){
     return INT_TYPE;
   }
-  if (validNumber(symbol, true)){
+  if (validNumber(symbol, length, true)){
     return DOUBLE_TYPE;
   }
   if ((length == 2) && (symbol[0] == '#') && ((symbol[1] == 't') || (symbol[1] == 'f'))){
@@ -231,15 +237,17 @@ Value *tokenize(){
 // Display the contents of the list of tokens, along with associated type information.
 // The tokens are displayed one on each line, in the format specified in the instructions.
 void displayTokens(Value *list){
-  if(!isNull(car(list))){
-    switch (car(list)->type) {
+  Value *head = car(list);
+  if(!isNull(head)){
+    switch (head->type) {
       case INT_TYPE:
+        printf("%i:integer\n", head->i);
         break;
       case BOOL_TYPE:
-        if (car(list)->i == 1){
+        if (head->i == 1){
           printf("#t:boolean\n");
         }
-        if (car(list)->i == 0){
+        if (head->i == 0){
           printf("#f:boolean\n");
         }
         break;
@@ -250,13 +258,13 @@ void displayTokens(Value *list){
         printf("):close\n");
         break;
       case STR_TYPE:
-        printf("%s:string\n", car(list)->s);
+        printf("\"%s\":string\n", head->s);
         break;
       case DOUBLE_TYPE:
-        printf("%f:double\n", car(list)->d);
+        printf("%f:double\n", head->d);
         break;
       case SYMBOL_TYPE:
-        printf("%s:symbol\n", car(list)->s);
+        printf("%s:symbol\n", head->s);
         break;
       default:
         printf("WRONG TYPE\n");
