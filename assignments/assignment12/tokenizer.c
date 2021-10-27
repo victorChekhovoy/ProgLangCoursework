@@ -37,19 +37,16 @@ Value *makeBool(char *value){
   if (value[1] == 't'){
     newBool->i = 1;
   }
-  else if (value[1] == 'f'){
+  if (value[1] == 'f'){
     newBool->i = 0;
   }
-  else{
-    newBool->i = -1;
-  }
+  //printf("Boolean value: %i\n", newBool->i);
   return newBool;
 }
 
 Value *makeSymbol(char *value){
   Value *newSymbol = talloc(sizeof(Value));
   newSymbol->type = SYMBOL_TYPE;
-  newSymbol->s = talloc(sizeof(value));
   newSymbol->s = value;
   return newSymbol;
 }
@@ -74,24 +71,24 @@ Value *makeString(char *rawValue, int length){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
   newSymbol->type = STR_TYPE;
   newSymbol->s = talloc(sizeof(char)*(length-1));
-  for (int i = 1; i < length-1; i++){
+  for (int i = 1; i < length; i++){
     newSymbol->s[i-1] = rawValue[i];
   }
-  newSymbol->s[length-1] = '\0';
+  newSymbol->s[length] = '\0';
   return newSymbol;
 }
 
-char* readString(){
+char* readString(int *length){
   char *output = talloc(MAX_STR_LEN);
   char current = (char) fgetc(stdin);
-  int index = 0;
-  output[index++] = '"';
+  *length = 0;
+  output[(*length)++] = '"';
   while (current != EOF && current != '"' && current != '\n'){
-    output[index++] = current;
+    output[(*length)++] = current;
     current = (char) fgetc(stdin);
   }
-  output[index] = '"';
-  output[index+1] = '\0';
+  output[*length] = '"';
+  output[(*length)+1] = '\0';
   return output;
 }
 
@@ -112,7 +109,7 @@ char* readComment(){
 char *readMultiChar(char currentChar, int *index){
   char *output;
   if (currentChar == '"'){
-    output = readString();
+    output = readString(index);
   }
   else if (currentChar == ';'){
     output = readComment();
@@ -125,7 +122,7 @@ char *readMultiChar(char currentChar, int *index){
       (*index)++;
       currentChar = (char) fgetc(stdin);
     }
-    output[(*index)++] = '\0';
+    output[(*index)+1] = '\0';
   }
   return output;
 }
@@ -154,9 +151,7 @@ bool validNumber(char *symbol, bool dots_allowed){
 }
 
 int determineType(char *symbol, int length){
-  printf("\n\nSymbol: %s\n", symbol);
-  printf("Length: %i", length);
-  printf("First and last character: %c, %c\n", symbol[0], symbol[length-2]);
+
   if ((symbol[0] == '"') && (symbol[length] == '"')){
     return STR_TYPE;
   }
@@ -220,10 +215,8 @@ Value *tokenize(){
           char *currentRawSymbol;
           int *symbolLength = talloc(sizeof(int));
           currentRawSymbol = readMultiChar(nextChar, symbolLength);
-          *symbolLength = *symbolLength - 1;
           int type = determineType(currentRawSymbol, *symbolLength);
           Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
-
           if (!isNull(currentSymbol)){
             tokens = cons(currentSymbol, tokens);
           }
@@ -241,10 +234,14 @@ void displayTokens(Value *list){
   if(!isNull(car(list))){
     switch (car(list)->type) {
       case INT_TYPE:
-        printf("%i:integer\n", car(list)->i);
         break;
       case BOOL_TYPE:
-        printf("%i:boolean\n", car(list)->i);
+        if (car(list)->i == 1){
+          printf("#t:boolean\n");
+        }
+        if (car(list)->i == 0){
+          printf("#f:boolean\n");
+        }
         break;
       case OPEN_TYPE:
         printf("(:open\n");
@@ -253,7 +250,7 @@ void displayTokens(Value *list){
         printf("):close\n");
         break;
       case STR_TYPE:
-        printf("%s:integer\n", car(list)->s);
+        printf("%s:string\n", car(list)->s);
         break;
       case DOUBLE_TYPE:
         printf("%f:double\n", car(list)->d);

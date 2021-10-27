@@ -123,7 +123,7 @@ Value *reverseHelper(Value *list, Value *reversed_list){
       Value *new_car = (Value *) talloc(sizeof(Value));
       int current_type = current_car->type;
       new_car->type = current_type;
-      if (current_type == INT_TYPE){
+      if ((current_type == INT_TYPE) || (current_type == BOOL_TYPE)){
         int new_car_value = current_car->i;
         new_car->i = new_car_value;
       }
@@ -131,7 +131,7 @@ Value *reverseHelper(Value *list, Value *reversed_list){
         double new_car_value = current_car->d;
         new_car->d = new_car_value;
       }
-      if (current_type == STR_TYPE){
+      if ((current_type == STR_TYPE) || (current_type == SYMBOL_TYPE)){
         char *new_car_value = (char *) talloc(sizeof(char) * (strlen(current_car->s) + 1));
         strcpy(new_car_value, current_car->s);
         new_car->s = new_car_value;

@@ -5,7 +5,7 @@
 #include "talloc.h"
 
 int main() {
-    Value *list = tokenize();
-    displayTokens(list);
+    Value *tokensList = tokenize();
+    displayTokens(tokensList);
     tfree();
 }
