@@ -106,6 +106,10 @@ char* readComment(){
   return output;
 }
 
+bool errorCheck(char *input, int length){
+  return true; //TODO
+}
+
 char *readMultiChar(char currentChar, int *index){
   char *output;
   if (currentChar == '"'){
@@ -265,6 +269,9 @@ void displayTokens(Value *list){
         break;
       case SYMBOL_TYPE:
         printf("%s:symbol\n", head->s);
+        break;
+      case ERROR_TYPE:
+        printf("Syntax Error: %s\n", head->s);
         break;
       default:
         printf("WRONG TYPE\n");
