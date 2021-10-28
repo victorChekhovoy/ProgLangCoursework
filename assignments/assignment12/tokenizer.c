@@ -10,6 +10,7 @@
 #define NUMBERS "1234567890"
 #define MAX_STR_LEN 301
 #define TERMINATORS "() \n"
+#define INITALS "!$%&*/:<=>?~_^"
 
 char peek(){
   char output = (char) fgetc(stdin);
@@ -174,8 +175,13 @@ int determineType(char *symbol, int length){
   if (validNumber(symbol, length, true)){
     return DOUBLE_TYPE;
   }
-  if ((length == 2) && (symbol[0] == '#') && ((symbol[1] == 't') || (symbol[1] == 'f'))){
-    return BOOL_TYPE;
+  if ((length == 2) && (symbol[0] == '#')){
+    if((symbol[1] == 't') || (symbol[1] == 'f')){
+      return BOOL_TYPE;
+    }
+    else{
+      return ERROR_TYPE;
+    }
   }
   return SYMBOL_TYPE;
 }
