@@ -233,7 +233,7 @@ Value *tokenize(){
           currentRawSymbol = readMultiChar(nextChar, symbolLength);
           int type = determineType(currentRawSymbol, *symbolLength);
           Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
-          if (!isNull(currentSymbol)){
+          if (!isNull(currentSymbol) && !errorCheck(currentSymbol)){
             tokens = cons(currentSymbol, tokens);
           }
         }
