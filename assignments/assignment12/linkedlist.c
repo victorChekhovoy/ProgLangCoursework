@@ -95,10 +95,10 @@ void display_inner(Value* list){
           }
           break;
       case SYMBOL_TYPE:
-          printf("%s", list->s);
+          printf("%s ", list->s);
           break;
       case ERROR_TYPE:
-          printf("%s", list->s);
+          printf("%s ", list->s);
           break;
       default:
           break;

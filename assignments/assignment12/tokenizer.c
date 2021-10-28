@@ -10,7 +10,8 @@
 #define NUMBERS "1234567890"
 #define MAX_STR_LEN 301
 #define TERMINATORS "() \n"
-#define INITALS "!$%&*/:<=>?~_^"
+#define INITIALS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&*/:<=>?~_^\"\'"
+#define SUBSEQUENT " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&*/:<=>?~_^1234567890.+-;"
 
 char peek(){
   char output = (char) fgetc(stdin);
@@ -79,6 +80,13 @@ Value *makeString(char *rawValue, int length){
   return newSymbol;
 }
 
+Value *makeError(){
+  Value *newSymbol = (Value *) talloc(sizeof(Value));
+  newSymbol->type = ERROR_TYPE;
+  newSymbol->s = "Syntax Error";
+  return newSymbol;
+}
+
 char* readString(int *length){
   char *output = talloc(MAX_STR_LEN);
   char current = (char) fgetc(stdin);
@@ -107,15 +115,51 @@ char* readComment(){
   return output;
 }
 
-bool errorCheck(char *input, int length){
-  if ((input[0] == '#') && ((input[1] != 'f') || (input[1] != 't')){
+bool validNumber(char *symbol, int length, bool dots_allowed){
+  int index = 0;
+  int dots = dots_allowed;
+  if (symbol[0] == '-'){
+    if (length == 1){
+      return false;
+    }
+    index++;
+  }
+  while (symbol[index] != '\0'){
+    if (symbol[index] == '.'){
+      dots--;
+    }
+    else if (strchr(NUMBERS, symbol[index]) == NULL){
+      return false;
+    }
+    index++;
+  }
+  if (dots >= 0){
     return true;
   }
-  for (i = 0; i < length; i ++){ //check if each char is valid?
-    if (input[i] )
-  } 
-  return false; //TODO check if each character is in initals and if it's a pound,
-              // check if the next character is a t or f
+  else{
+    return false;
+  }
+}
+
+bool errorCheck(char *input, int length){
+  if ((input[0] == '#') && ((input[1] == 'f') || (input[1] == 't'))){
+    return false;
+  }
+  if ((length == 1) && ((input[0] == '+') || (input[0] == '-'))){
+    return false;
+  }
+  if (validNumber(input, length, true) || validNumber(input, length, false)){
+    return false;
+  }
+  if (strchr(INITIALS, input[0]) == NULL){
+    return true;
+  }
+  for (int i = 1; i < length; i++){
+    if (strchr(SUBSEQUENT, input[i]) == NULL){
+      return true;
+    }
+  }
+  return false;
 }
 
 char *readMultiChar(char currentChar, int *index){
@@ -142,31 +186,7 @@ char *readMultiChar(char currentChar, int *index){
   return output;
 }
 
-bool validNumber(char *symbol, int length, bool dots_allowed){
-  int index = 0;
-  int dots = dots_allowed;
-  if (symbol[0] == '-'){
-    if (length == 1){
-      return false;
-    }
-    index++;
-  }
-  while (symbol[index] != '\0'){
-    if (symbol[index] == '.'){
-      dots--;
-    }
-    else if (strchr(NUMBERS, symbol[index]) == NULL){
-      return false;
-    }
-    index++;
-  }
-  if (dots >= 0){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
+
 
 int determineType(char *symbol, int length){
 
@@ -235,14 +255,19 @@ Value *tokenize(){
           currentRawSymbol = readMultiChar(nextChar, symbolLength);
           int type = determineType(currentRawSymbol, *symbolLength);
           Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
-          if (errorCheck(currentSymbol)){
-            makeError(tokens);
-          }
           if (!isNull(currentSymbol)){
-            tokens = cons(currentSymbol, tokens);
+            if (errorCheck(currentRawSymbol, *symbolLength)){
+              tokens = cons(makeError(), makeNull());
+            }
+            else{
+              tokens = cons(currentSymbol, tokens);
+            }
           }
         }
         nextChar = (char)fgetc(stdin);
+        if (car(tokens)->type == ERROR_TYPE){
+          nextChar = EOF;
+        }
       }
     Value *reversedList = reverse(tokens);
     return reversedList;
@@ -282,7 +307,7 @@ void displayTokens(Value *list){
         printf("%s:symbol\n", head->s);
         break;
       case ERROR_TYPE:
-        printf("Syntax Error: %s\n", head->s);
+        printf("%s\n", head->s);
         break;
       default:
         printf("WRONG TYPE\n");
