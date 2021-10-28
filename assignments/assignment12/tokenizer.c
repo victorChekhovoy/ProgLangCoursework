@@ -236,7 +236,7 @@ Value *tokenize(){
           int type = determineType(currentRawSymbol, *symbolLength);
           Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
           if (errorCheck(currentSymbol)){
-            //set tokens equal to null?
+            makeError(tokens);
           }
           if (!isNull(currentSymbol)){
             tokens = cons(currentSymbol, tokens);
