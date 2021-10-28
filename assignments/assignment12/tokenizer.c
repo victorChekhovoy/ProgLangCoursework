@@ -108,7 +108,14 @@ char* readComment(){
 }
 
 bool errorCheck(char *input, int length){
-  return true; //TODO
+  if ((input[0] == '#') && ((input[1] != 'f') || (input[1] != 't')){
+    return true;
+  }
+  for (i = 0; i < length; i ++){ //check if each char is valid?
+    if (input[i] )
+  } 
+  return false; //TODO check if each character is in initals and if it's a pound,
+              // check if the next character is a t or f
 }
 
 char *readMultiChar(char currentChar, int *index){
@@ -175,13 +182,8 @@ int determineType(char *symbol, int length){
   if (validNumber(symbol, length, true)){
     return DOUBLE_TYPE;
   }
-  if ((length == 2) && (symbol[0] == '#')){
-    if((symbol[1] == 't') || (symbol[1] == 'f')){
-      return BOOL_TYPE;
-    }
-    else{
-      return ERROR_TYPE;
-    }
+  if ((length == 2) && (symbol[0] == '#') && ((symbol[1] == 't') || (symbol[1] == 'f'))){
+    return BOOL_TYPE;
   }
   return SYMBOL_TYPE;
 }
@@ -233,7 +235,10 @@ Value *tokenize(){
           currentRawSymbol = readMultiChar(nextChar, symbolLength);
           int type = determineType(currentRawSymbol, *symbolLength);
           Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
-          if (!isNull(currentSymbol) && !errorCheck(currentSymbol)){
+          if (errorCheck(currentSymbol)){
+            //set tokens equal to null?
+          }
+          if (!isNull(currentSymbol)){
             tokens = cons(currentSymbol, tokens);
           }
         }
