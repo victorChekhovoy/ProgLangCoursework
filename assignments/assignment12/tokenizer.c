@@ -207,6 +207,7 @@ char *errorCheck(char *input, int length){
   return NULL;
 }
 
+
 char *readMultiChar(char currentChar, int *index){
   char *output = NULL;
   if (currentChar == '"'){
@@ -233,6 +234,7 @@ char *readMultiChar(char currentChar, int *index){
   return output;
 }
 
+// takes in a pointer to a symbol and a length and returns it's type
 int determineType(char *symbol, int length){
 
   if ((symbol[0] == '"') && (symbol[length] == '"')){
@@ -253,6 +255,8 @@ int determineType(char *symbol, int length){
   return SYMBOL_TYPE;
 }
 
+// takes in a type, pointer to the symbol, and length and calls the appropriate make function
+// for that type
 Value *makeNewSymbol(int type, char *rawSymbol, int length){
   Value *output = NULL;
   switch(type){
