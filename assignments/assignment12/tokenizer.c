@@ -13,6 +13,7 @@
 #define INITIALS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&*/:<=>?~_^\"\'"
 #define SUBSEQUENT " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&*/:<=>?~_^1234567890.+-;"
 
+// peek at the next character and returns the next character
 char peek(){
   char output = (char) fgetc(stdin);
   if (output != EOF){
@@ -21,18 +22,21 @@ char peek(){
   return output;
 }
 
+// makes a new token of OPEN_TYPE
 Value *makeOpen(){
   Value *newOpen = (Value *)talloc(sizeof(Value));
   newOpen->type = OPEN_TYPE;
   return newOpen;
 }
 
+// makes a new token of CLOSED_TYPE
 Value *makeClosed(){
   Value *newClosed = (Value *)talloc(sizeof(Value));
   newClosed->type = CLOSE_TYPE;
   return newClosed;
 }
 
+// makes a new token of BOOL_TYPE
 Value *makeBool(char *value){
   Value *newBool = (Value *)talloc(sizeof(Value));
   newBool->type = BOOL_TYPE;
@@ -45,6 +49,7 @@ Value *makeBool(char *value){
   return newBool;
 }
 
+// makes a new token of SYMBOL_TYPE
 Value *makeSymbol(char *value){
   Value *newSymbol = talloc(sizeof(Value));
   newSymbol->type = SYMBOL_TYPE;
@@ -52,6 +57,7 @@ Value *makeSymbol(char *value){
   return newSymbol;
 }
 
+// makes a new token of INT_TYPE
 Value *makeInt(char *value){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
   int numericValue = strtol(value, NULL, 10);
@@ -60,6 +66,7 @@ Value *makeInt(char *value){
   return newSymbol;
 }
 
+// makes a new token of DOUBLE_TYPE
 Value *makeDouble(char *value){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
   double numericValue = 0.0;
@@ -69,6 +76,7 @@ Value *makeDouble(char *value){
   return newSymbol;
 }
 
+// makes a new token of STR_TYPE
 Value *makeString(char *rawValue, int length){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
   newSymbol->type = STR_TYPE;
@@ -83,6 +91,7 @@ Value *makeString(char *rawValue, int length){
   return newSymbol;
 }
 
+// makes a new token of ERROR_TYPE
 Value *makeError(char *errorMessage){
   Value *newSymbol = (Value *) talloc(sizeof(Value));
   newSymbol->type = ERROR_TYPE;
@@ -90,6 +99,8 @@ Value *makeError(char *errorMessage){
   return newSymbol;
 }
 
+// takes in a pointer to the length of the string and reads through until it finds a
+// terminating character, then returns the whole string
 char *readString(int *length){
   char *output = talloc(MAX_STR_LEN);
   for (int i = 0; i < MAX_STR_LEN; i++){
@@ -106,6 +117,7 @@ char *readString(int *length){
   return output;
 }
 
+// reads through until the end of the comment and returns it
 char *readComment(){
   char *output = talloc(MAX_STR_LEN);
   for (int i = 0; i < MAX_STR_LEN; i++){
@@ -122,6 +134,7 @@ char *readComment(){
   return output;
 }
 
+// 
 bool validNumber(char *symbol, int length, bool dots_allowed){
   int dots = dots_allowed;
   int i = 0;
@@ -147,6 +160,7 @@ bool validNumber(char *symbol, int length, bool dots_allowed){
   }
 }
 
+// performs of a number of checks to see if there is invalid syntax
 char *errorCheck(char *input, int length){
   if ((input[0] == '#') && ((input[1] == 'f') || (input[1] == 't'))){
     return NULL;
