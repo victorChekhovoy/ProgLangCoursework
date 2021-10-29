@@ -63,16 +63,17 @@ Value *makeInt(char *value){
 
 Value *makeDouble(char *value){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
-  double numericValue = strtod(value, NULL);
-  newSymbol->type = DOUBLE_TYPE;
+  double numericValue = 0.0;
+  numericValue = strtod(value, NULL);
   newSymbol->d = numericValue;
+  newSymbol->type = DOUBLE_TYPE;
   return newSymbol;
 }
 
 Value *makeString(char *rawValue, int length){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
   newSymbol->type = STR_TYPE;
-  newSymbol->s = talloc(sizeof(char)*(length-1));
+  newSymbol->s = talloc(sizeof(char)*(length+1));
   for (int i = 1; i < length; i++){
     newSymbol->s[i-1] = rawValue[i];
   }
@@ -116,22 +117,21 @@ char* readComment(){
 }
 
 bool validNumber(char *symbol, int length, bool dots_allowed){
-  int index = 0;
   int dots = dots_allowed;
-  if (symbol[0] == '-'){
+  int i = 0;
+  if (symbol[i] == '-'){
     if (length == 1){
       return false;
     }
-    index++;
+    i++;
   }
-  while (symbol[index] != '\0'){
-    if (symbol[index] == '.'){
+  for (; i < length; i++){
+    if (symbol[i] == '.'){
       dots--;
     }
-    else if (strchr(NUMBERS, symbol[index]) == NULL){
+    else if (strchr(NUMBERS, symbol[i]) == NULL){
       return false;
     }
-    index++;
   }
   if (dots >= 0){
     return true;
@@ -163,7 +163,7 @@ bool errorCheck(char *input, int length){
 }
 
 char *readMultiChar(char currentChar, int *index){
-  char *output;
+  char *output = NULL;
   if (currentChar == '"'){
     output = readString(index);
   }
@@ -209,7 +209,7 @@ int determineType(char *symbol, int length){
 }
 
 Value *makeNewSymbol(int type, char *rawSymbol, int length){
-  Value *output;
+  Value *output = NULL;
   switch(type){
     case STR_TYPE:
       output = makeString(rawSymbol, length);
@@ -250,8 +250,9 @@ Value *tokenize(){
           tokens = cons(makeOpen(), tokens);
         }
         else if ((nextChar != '\n') && (nextChar != ' ')){
-          char *currentRawSymbol;
+          char *currentRawSymbol = NULL;
           int *symbolLength = talloc(sizeof(int));
+          *symbolLength = 0;
           currentRawSymbol = readMultiChar(nextChar, symbolLength);
           int type = determineType(currentRawSymbol, *symbolLength);
           Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
