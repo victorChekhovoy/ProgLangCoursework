@@ -170,7 +170,7 @@ char *errorCheck(char *input, int length){
     strcat(errorOutput, errorMessage);
     strcat(errorOutput, input);
     strcat(errorOutput, closingBracket);
-    return errorMessage;
+    return errorOutput;
   }
   for (int i = 1; i < length; i++){
     if (strchr(SUBSEQUENT, input[i]) == NULL){
