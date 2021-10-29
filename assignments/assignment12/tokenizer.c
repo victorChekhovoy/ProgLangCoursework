@@ -1,3 +1,8 @@
+'''
+    Assignment 12 - Tokenizer
+    Viktor Chekhovoi and Alia Babinet
+    CS 251, Fall 2021
+'''
 #include <stdlib.h>
 #include <stdio.h>
 #include "tokenizer.h"
