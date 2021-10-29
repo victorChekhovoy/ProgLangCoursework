@@ -134,7 +134,8 @@ char *readComment(){
   return output;
 }
 
-// 
+// takes in a pointer to a symbol, a length, and boolean for if it is a double and checks
+// if the symbol is a valid number (either integer or double)
 bool validNumber(char *symbol, int length, bool dots_allowed){
   int dots = dots_allowed;
   int i = 0;
@@ -207,11 +208,12 @@ char *errorCheck(char *input, int length){
   return NULL;
 }
 
-
-char *readMultiChar(char currentChar, int *index){
+// takes in the current character and a pointer to it's length, then based on if it is a string
+// or a comment, or something else, reads through the whole symbol
+char *readMultiChar(char currentChar, int *length){
   char *output = NULL;
   if (currentChar == '"'){
-    output = readString(index);
+    output = readString(length);
   }
   else if (currentChar == ';'){
     output = readComment();
@@ -221,10 +223,10 @@ char *readMultiChar(char currentChar, int *index){
     for (int i = 0; i < MAX_STR_LEN; i++){
       output[i] = '\0';
     }
-    *index = 0;
+    *length = 0;
     while (currentChar != EOF && strchr(TERMINATORS, currentChar) == NULL){
-      output[*index] = currentChar;
-      (*index)++;
+      output[*length] = currentChar;
+      (*length)++;
       currentChar = (char) peek();
       if ((currentChar != ')') && (currentChar != '(')){
         currentChar = (char) fgetc(stdin);
