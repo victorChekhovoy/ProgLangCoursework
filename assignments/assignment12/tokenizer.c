@@ -42,7 +42,6 @@ Value *makeBool(char *value){
   if (value[1] == 'f'){
     newBool->i = 0;
   }
-  //printf("Boolean value: %i\n", newBool->i);
   return newBool;
 }
 
@@ -74,6 +73,9 @@ Value *makeString(char *rawValue, int length){
   Value *newSymbol = (Value *)talloc(sizeof(Value));
   newSymbol->type = STR_TYPE;
   newSymbol->s = talloc(sizeof(char)*(length+1));
+  for (int i = 0; i < length + 1; i++){
+    newSymbol->s[i] = '\0';
+  }
   for (int i = 1; i < length; i++){
     newSymbol->s[i-1] = rawValue[i];
   }
@@ -81,15 +83,18 @@ Value *makeString(char *rawValue, int length){
   return newSymbol;
 }
 
-Value *makeError(){
+Value *makeError(char *errorMessage){
   Value *newSymbol = (Value *) talloc(sizeof(Value));
   newSymbol->type = ERROR_TYPE;
-  newSymbol->s = "Syntax Error";
+  newSymbol->s = errorMessage;
   return newSymbol;
 }
 
-char* readString(int *length){
+char *readString(int *length){
   char *output = talloc(MAX_STR_LEN);
+  for (int i = 0; i < MAX_STR_LEN; i++){
+    output[i] = '\0';
+  }
   char current = (char) fgetc(stdin);
   *length = 0;
   output[(*length)++] = '"';
@@ -98,12 +103,14 @@ char* readString(int *length){
     current = (char) fgetc(stdin);
   }
   output[*length] = '"';
-  output[(*length)+1] = '\0';
   return output;
 }
 
-char* readComment(){
+char *readComment(){
   char *output = talloc(MAX_STR_LEN);
+  for (int i = 0; i < MAX_STR_LEN; i++){
+    output[i] = '\0';
+  }
   char current = (char) fgetc(stdin);
   int index = 0;
   output[index++] = ';';
@@ -112,7 +119,6 @@ char* readComment(){
     index++;
     current = (char) fgetc(stdin);
   }
-  output[index+1] = '\0';
   return output;
 }
 
@@ -141,25 +147,46 @@ bool validNumber(char *symbol, int length, bool dots_allowed){
   }
 }
 
-bool errorCheck(char *input, int length){
+char *errorCheck(char *input, int length){
   if ((input[0] == '#') && ((input[1] == 'f') || (input[1] == 't'))){
-    return false;
+    return NULL;
+  }
+  if ((input[0] == '#') && ((input[1] != 'f') || (input[1] != 't'))){
+    return "Boolean was not #t or #f";
   }
   if ((length == 1) && ((input[0] == '+') || (input[0] == '-'))){
-    return false;
+    return NULL;
   }
   if (validNumber(input, length, true) || validNumber(input, length, false)){
-    return false;
+    return NULL;
   }
   if (strchr(INITIALS, input[0]) == NULL){
-    return true;
+    char *errorOutput = talloc(MAX_STR_LEN + 50);
+    for (int i = 0; i < MAX_STR_LEN + 50; i++){
+      errorOutput[i] = '\0';
+    }
+    char *errorMessage = "Illegal initial symbol for token <";
+    char *closingBracket = ">";
+    strcat(errorOutput, errorMessage);
+    strcat(errorOutput, input);
+    strcat(errorOutput, closingBracket);
+    return errorMessage;
   }
   for (int i = 1; i < length; i++){
     if (strchr(SUBSEQUENT, input[i]) == NULL){
-      return true;
+      char *errorOutput = talloc(MAX_STR_LEN + 50);
+      for (int i = 0; i < MAX_STR_LEN + 50; i++){
+        errorOutput[i] = '\0';
+      }
+      char *errorMessage = "Illegal subsequent symbol for token <";
+      char *closingBracket = ">";
+      strcat(errorOutput, errorMessage);
+      strcat(errorOutput, input);
+      strcat(errorOutput, closingBracket);
+      return errorMessage;
     }
   }
-  return false;
+  return NULL;
 }
 
 char *readMultiChar(char currentChar, int *index){
@@ -172,6 +199,9 @@ char *readMultiChar(char currentChar, int *index){
   }
   else{
     output = talloc(MAX_STR_LEN);
+    for (int i = 0; i < MAX_STR_LEN; i++){
+      output[i] = '\0';
+    }
     *index = 0;
     while (currentChar != EOF && strchr(TERMINATORS, currentChar) == NULL){
       output[*index] = currentChar;
@@ -181,12 +211,9 @@ char *readMultiChar(char currentChar, int *index){
         currentChar = (char) fgetc(stdin);
       }
     }
-    output[(*index)+1] = '\0';
   }
   return output;
 }
-
-
 
 int determineType(char *symbol, int length){
 
@@ -257,8 +284,9 @@ Value *tokenize(){
           int type = determineType(currentRawSymbol, *symbolLength);
           Value *currentSymbol = makeNewSymbol(type, currentRawSymbol, *symbolLength);
           if (!isNull(currentSymbol)){
-            if (errorCheck(currentRawSymbol, *symbolLength)){
-              tokens = cons(makeError(), makeNull());
+            char *errorMessage = errorCheck(currentRawSymbol, *symbolLength);
+            if (errorMessage != NULL){
+              tokens = cons(makeError(errorMessage), makeNull());
             }
             else{
               tokens = cons(currentSymbol, tokens);
@@ -308,7 +336,7 @@ void displayTokens(Value *list){
         printf("%s:symbol\n", head->s);
         break;
       case ERROR_TYPE:
-        printf("%s\n", head->s);
+        printf("Syntax Error: %s\n", head->s);
         break;
       default:
         printf("WRONG TYPE\n");
