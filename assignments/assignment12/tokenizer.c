@@ -166,10 +166,12 @@ char *errorCheck(char *input, int length){
       errorOutput[i] = '\0';
     }
     char *errorMessage = "Illegal initial symbol for token <";
-    char *closingBracket = ">";
     strcat(errorOutput, errorMessage);
-    strcat(errorOutput, input);
-    strcat(errorOutput, closingBracket);
+    int i;
+    for (i = 0; i < length; i++){
+      errorOutput[i+34] = input[i];
+    }
+    errorOutput[i+34] = '>';
     return errorOutput;
   }
   for (int i = 1; i < length; i++){
@@ -179,11 +181,13 @@ char *errorCheck(char *input, int length){
         errorOutput[i] = '\0';
       }
       char *errorMessage = "Illegal subsequent symbol for token <";
-      char *closingBracket = ">";
       strcat(errorOutput, errorMessage);
-      strcat(errorOutput, input);
-      strcat(errorOutput, closingBracket);
-      return errorMessage;
+      int i;
+      for (i = 0; i < length; i++){
+        errorOutput[i+37] = input[i];
+      }
+      errorOutput[i+37] = '>';
+      return errorOutput;
     }
   }
   return NULL;
