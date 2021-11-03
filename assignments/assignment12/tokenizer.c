@@ -1,3 +1,8 @@
+/*
+    Assignment 12 - Tokenizer
+    Viktor Chekhovoi and Alia Babinet
+    CS 251, Fall 2021
+*/
 #include <stdlib.h>
 #include <stdio.h>
 #include "tokenizer.h"
@@ -134,7 +139,8 @@ char *readComment(){
   return output;
 }
 
-//
+// takes in a pointer to a symbol, a length, and boolean for if it is a double and checks
+// if the symbol is a valid number (either integer or double)
 bool validNumber(char *symbol, int length, bool dots_allowed){
   int dots = dots_allowed;
   int i = 0;
@@ -210,10 +216,12 @@ char *errorCheck(char *input, int length){
   return NULL;
 }
 
-char *readMultiChar(char currentChar, int *index){
+// takes in the current character and a pointer to it's length, then based on if it is a string
+// or a comment, or something else, reads through the whole symbol
+char *readMultiChar(char currentChar, int *length){
   char *output = NULL;
   if (currentChar == '"'){
-    output = readString(index);
+    output = readString(length);
   }
   else if (currentChar == ';'){
     output = readComment();
@@ -223,10 +231,10 @@ char *readMultiChar(char currentChar, int *index){
     for (int i = 0; i < MAX_STR_LEN; i++){
       output[i] = '\0';
     }
-    *index = 0;
+    *length = 0;
     while (currentChar != EOF && strchr(TERMINATORS, currentChar) == NULL){
-      output[*index] = currentChar;
-      (*index)++;
+      output[*length] = currentChar;
+      (*length)++;
       currentChar = (char) peek();
       if ((currentChar != ')') && (currentChar != '(')){
         currentChar = (char) fgetc(stdin);
@@ -236,6 +244,7 @@ char *readMultiChar(char currentChar, int *index){
   return output;
 }
 
+// takes in a pointer to a symbol and a length and returns it's type
 int determineType(char *symbol, int length){
 
   if ((symbol[0] == '"') && (symbol[length] == '"')){
@@ -256,6 +265,8 @@ int determineType(char *symbol, int length){
   return SYMBOL_TYPE;
 }
 
+// takes in a type, pointer to the symbol, and length and calls the appropriate make function
+// for that type
 Value *makeNewSymbol(int type, char *rawSymbol, int length){
   Value *output = NULL;
   switch(type){
