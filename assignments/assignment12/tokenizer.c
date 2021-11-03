@@ -134,7 +134,7 @@ char *readComment(){
   return output;
 }
 
-// 
+//
 bool validNumber(char *symbol, int length, bool dots_allowed){
   int dots = dots_allowed;
   int i = 0;
@@ -194,13 +194,16 @@ char *errorCheck(char *input, int length){
       for (int i = 0; i < MAX_STR_LEN + 50; i++){
         errorOutput[i] = '\0';
       }
-      char *errorMessage = "Illegal subsequent symbol for token <";
+      char *errorMessage = "Illegal subsequent symbol <";
       strcat(errorOutput, errorMessage);
+      errorOutput[27] = input[i];
+      char *errorMessageCont = "> in token ";
+      strcat(errorOutput, errorMessageCont);
       int i;
       for (i = 0; i < length; i++){
-        errorOutput[i+37] = input[i];
+        errorOutput[i+40] = input[i];
       }
-      errorOutput[i+37] = '>';
+      errorOutput[i+40] = '>';
       return errorOutput;
     }
   }
