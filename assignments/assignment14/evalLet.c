@@ -8,6 +8,8 @@
 #include <assert.h>
 #include "parser.h"
 #include "evalLet.h"
+#include "lookUpSymbol.h"
+#include "interpreter.h"
 
 void displayBinding(Value *binding){
   printf("Symbol: %s, Value: ", car(car(binding))->s);
@@ -44,7 +46,28 @@ void displayFrame(Frame *frame){
   }
 }
 
+void bindingError(){
+  printf("Evaluation error: improper binding in let\n");
+  texit(0);
+}
+
+void letArgsError(){
+  printf("Evaluation error: no args following bindings in let\n");
+  texit(0);
+}
+
+void duplicateArgumentError(Value *symbol){
+  printf("Evaluation error: attempting to define duplicate argument ");
+  printf("%s", symbol->s);
+  printf(" in let expression\n");
+  texit(0);
+}
+
 Value *makeBinding(Value *letBinding){
+  if ((isNull(letBinding)) || (isNull(car(letBinding))) || (isNull(car(cdr(letBinding))))){
+    bindingError();
+  }
+
   Value *newBinding = talloc(sizeof(Value));
   newBinding->type = CONS_TYPE;
   newBinding->c.car = car(letBinding);
@@ -57,13 +80,15 @@ Frame *setVariables(Value *letBindings, Frame *frame){
   while (!isNull(car(letBindings))){
     currentBinding = car(letBindings);
 
+    /*if (!isNull(lookUpSymbol(car(currentBinding), frame))){
+      duplicateArgumentError(car(currentBinding));
+    }*/
     Value *newBinding = makeBinding(currentBinding);
     Value *bindingContainer = talloc(sizeof(Value));
     bindingContainer->type = CONS_TYPE;
     bindingContainer->c.car = newBinding;
     bindingContainer->c.cdr = frame->bindings;
     frame->bindings = bindingContainer;
-    //frame->bindings = cons(newBinding, frame->bindings);
     letBindings = cdr(letBindings);
   }
   return frame;
@@ -73,6 +98,8 @@ Value *evalLet(Value *args, Frame *frame){
   Value *bindings = car(args);
   Value *expression = cdr(args);
   frame = setVariables(bindings, frame);
-  displayFrame(frame);
-  return makeNull();
+  if (isNull(car(expression))){
+    letArgsError();
+  }
+  return eval(car(expression), frame);
 }
