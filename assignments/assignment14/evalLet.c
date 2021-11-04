@@ -57,49 +57,102 @@ void letArgsError(){
 }
 
 void duplicateArgumentError(Value *symbol){
-  printf("Evaluation error: attempting to define duplicate argument ");
-  printf("%s", symbol->s);
-  printf(" in let expression\n");
+  printf("Evaluation error: attempting to define duplicate argument %s in let expression\n", symbol->s);
   texit(0);
 }
 
-Value *makeBinding(Value *letBinding){
+void symbolNotFoundError(Value *symbol){
+  printf("Evaluation error: symbol %s not found in the frame.\n", symbol->s);
+  texit(0);
+}
+
+bool containsSymbol(Value *linkedList, Value *symbolNode){
+  assert(symbolNode->type == SYMBOL_TYPE && "containsSymbol can only be run on a node of type SYMBOL_TYPE");
+  while (!isNull(linkedList)){
+    if (strcmp(car(linkedList)->s, symbolNode->s) == 0){
+      return true;
+    }
+    linkedList = cdr(linkedList);
+  }
+  return false;
+}
+
+Value *getLastElement(Value *linkedList){
+  Value *last = makeNull();
+  while (!isNull(cdr(linkedList))){
+    last = car(linkedList);
+    linkedList = cdr(linkedList);
+  }
+  return last;
+}
+
+Value *makeBinding(Value *letBinding, Frame *frame){
   if ((isNull(letBinding)) || (isNull(car(letBinding))) || (isNull(car(cdr(letBinding))))){
+    bindingError();
+  }
+  if (car(letBinding)->type != SYMBOL_TYPE){
     bindingError();
   }
 
   Value *newBinding = talloc(sizeof(Value));
   newBinding->type = CONS_TYPE;
   newBinding->c.car = car(letBinding);
-  newBinding->c.cdr = car(cdr(letBinding));
+
+  Value *variableValue = car(cdr(letBinding));
+  if (variableValue->type == SYMBOL_TYPE){
+    newBinding->c.cdr = lookUpSymbol(variableValue, frame);
+    if (isNull(newBinding->c.cdr)){
+
+    }
+  }
+  else {
+    newBinding->c.cdr = variableValue;
+  }
   return newBinding;
 }
 
 Frame *setVariables(Value *letBindings, Frame *frame){
   Value *currentBinding;
+  Value *addedBindings = makeNull();
+  Value *symbolsBound = makeNull();
   while (!isNull(car(letBindings))){
     currentBinding = car(letBindings);
 
-    /*if (!isNull(lookUpSymbol(car(currentBinding), frame))){
-      duplicateArgumentError(car(currentBinding));
-    }*/
-    Value *newBinding = makeBinding(currentBinding);
+    Value *newBinding = makeBinding(currentBinding, frame);
+    if (containsSymbol(symbolsBound, car(newBinding))){
+      duplicateArgumentError(car(newBinding));
+    }
+    symbolsBound = cons(car(newBinding), symbolsBound);
+
     Value *bindingContainer = talloc(sizeof(Value));
     bindingContainer->type = CONS_TYPE;
     bindingContainer->c.car = newBinding;
-    bindingContainer->c.cdr = frame->bindings;
-    frame->bindings = bindingContainer;
+
+    if (isNull(addedBindings)){ //we do this so that all vars from let bindings get added at once
+      bindingContainer->c.cdr = frame->bindings;
+      addedBindings = bindingContainer;
+    }
+    else {
+      bindingContainer->c.cdr = addedBindings;
+    }
+    addedBindings = bindingContainer;
     letBindings = cdr(letBindings);
   }
+  frame->bindings = addedBindings;
   return frame;
 }
 
 Value *evalLet(Value *args, Frame *frame){
   Value *bindings = car(args);
   Value *expression = cdr(args);
+
+  if (bindings->type != CONS_TYPE){
+    bindingError();
+  }
   frame = setVariables(bindings, frame);
-  if (isNull(car(expression))){
+  Value *returnValue = getLastElement(expression);
+  if (isNull(returnValue)){
     letArgsError();
   }
-  return eval(car(expression), frame);
+  return eval(returnValue, frame);
 }

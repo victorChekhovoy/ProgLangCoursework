@@ -18,9 +18,7 @@ Frame *makeFrame(){
 }
 
 void symbolNotFound(Value *symbol){
-  printf("Fatal Error: Symbol ");
-  printf("%s", symbol->s);
-  printf(" not found in the lookup table.\nThe program will now terminate.\n");
+  printf("Evaluation Error: Symbol %s not found in the lookup table.\n", symbol->s);
   texit(0);
 }
 
