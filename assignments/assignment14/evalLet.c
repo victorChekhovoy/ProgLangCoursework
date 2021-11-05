@@ -66,6 +66,18 @@ void symbolNotFoundError(Value *symbol){
   texit(0);
 }
 
+void checkNullBinding(Value *letBinding){
+  if ((isNull(letBinding)) || (isNull(car(letBinding))) || (isNull(car(cdr(letBinding))))){
+    bindingError();
+  }
+}
+
+void checkProperBinding(Value *letBinding){
+  if (car(letBinding)->type != SYMBOL_TYPE){
+    bindingError();
+  }
+}
+
 bool containsSymbol(Value *linkedList, Value *symbolNode){
   assert(symbolNode->type == SYMBOL_TYPE && "containsSymbol can only be run on a node of type SYMBOL_TYPE");
   while (!isNull(linkedList)){
@@ -87,12 +99,8 @@ Value *getLastElement(Value *linkedList){
 }
 
 Value *makeBinding(Value *letBinding, Frame *frame){
-  if ((isNull(letBinding)) || (isNull(car(letBinding))) || (isNull(car(cdr(letBinding))))){
-    bindingError();
-  }
-  if (car(letBinding)->type != SYMBOL_TYPE){
-    bindingError();
-  }
+  checkNullBinding(letBinding);
+  checkProperBinding(letBinding);
 
   Value *newBinding = talloc(sizeof(Value));
   newBinding->type = CONS_TYPE;
@@ -102,7 +110,7 @@ Value *makeBinding(Value *letBinding, Frame *frame){
   if (variableValue->type == SYMBOL_TYPE){
     newBinding->c.cdr = lookUpSymbol(variableValue, frame);
     if (isNull(newBinding->c.cdr)){
-
+      symbolNotFoundError(variableValue);
     }
   }
   else {
@@ -114,26 +122,24 @@ Value *makeBinding(Value *letBinding, Frame *frame){
 Frame *setVariables(Value *letBindings, Frame *frame){
   Value *currentBinding;
   Value *addedBindings = makeNull();
-  Value *symbolsBound = makeNull();
+  Value *letBindingsDefined = makeNull();
+
   while (!isNull(car(letBindings))){
     currentBinding = car(letBindings);
-
     Value *newBinding = makeBinding(currentBinding, frame);
-    if (containsSymbol(symbolsBound, car(newBinding))){
+
+    if (containsSymbol(letBindingsDefined, car(newBinding))){
       duplicateArgumentError(car(newBinding));
     }
-    symbolsBound = cons(car(newBinding), symbolsBound);
+    letBindingsDefined = cons(car(newBinding), letBindingsDefined);
 
-    Value *bindingContainer = talloc(sizeof(Value));
-    bindingContainer->type = CONS_TYPE;
-    bindingContainer->c.car = newBinding;
 
-    if (isNull(addedBindings)){ //we do this so that all vars from let bindings get added at once
-      bindingContainer->c.cdr = frame->bindings;
-      addedBindings = bindingContainer;
+    Value *bindingContainer = NULL;
+    if (isNull(addedBindings)){
+      bindingContainer = cons(newBinding, frame->bindings);
     }
     else {
-      bindingContainer->c.cdr = addedBindings;
+      bindingContainer = cons(newBinding, addedBindings);
     }
     addedBindings = bindingContainer;
     letBindings = cdr(letBindings);

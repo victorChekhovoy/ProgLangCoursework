@@ -22,8 +22,12 @@ void symbolNotFound(Value *symbol){
   texit(0);
 }
 
+void evaluationError(){
+  printf("Evaluation Error: unable to evaluate expression.\n");
+  texit(0);
+}
 
-void displayResult(Value *result){
+void displaySymbol(Value *result){
   switch(result->type){
       case INT_TYPE:
         printf("%i\n", result->i);
@@ -62,7 +66,6 @@ Value *eval(Value *tree, Frame *frame) {
       Value *args = cdr(tree);
       Value *result = talloc(sizeof(Value));
 
-      // Error checking on 'first' goes here...
       /*
       if (!strcmp(first->s, "if")) {
           result = evalIf(args, frame);
@@ -70,13 +73,10 @@ Value *eval(Value *tree, Frame *frame) {
       if (!strcmp(first->s, "let")){
         return evalLet(args, frame);
       }
-      // Other special forms go here...
-
-      /*else {
-         // 'first' is not a recognized special form
+      else {
          evaluationError();
-      }*/
-      return result;
+         return NULL;
+      }
    }
    default: {
      return tree;
@@ -90,6 +90,6 @@ void interpret(Value *tree){
     Value *result = eval(currentS, makeFrame());
     tree = cdr(tree);
     currentS = car(tree);
-    displayResult(result);
+    displaySymbol(result);
   }
 }
