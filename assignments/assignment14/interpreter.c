@@ -66,11 +66,9 @@ Value *eval(Value *tree, Frame *frame) {
       Value *args = cdr(tree);
       Value *result = talloc(sizeof(Value));
 
-      /*
       if (!strcmp(first->s, "if")) {
           result = evalIf(args, frame);
-      }*/
-      if (!strcmp(first->s, "let")){
+      else if (!strcmp(first->s, "let")){
         return evalLet(args, frame);
       }
       else {
