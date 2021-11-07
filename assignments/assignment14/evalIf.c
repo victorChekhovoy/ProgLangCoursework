@@ -13,8 +13,9 @@
 Value *evalIf(Value *args, Frame *frame){
     Value *bindings = car(args);
     Value *expression = cdr(args);
-    if (bindings->type != CONS_TYPE){
-        ifBindingError();
+
+    if (length(args) != 3) {
+        ifArgumentError();
     }
 
     Value *bool_exp = eval(car(args), frame);
