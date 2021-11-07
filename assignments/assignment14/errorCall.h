@@ -13,6 +13,6 @@ void symbolNotFoundError(Value *symbol);
 
 void evaluationError();
 
-void ifBindingError();
+void ifArgumentError();
 
 #endif

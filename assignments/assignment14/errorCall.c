@@ -29,7 +29,7 @@ void evaluationError(){
   texit(0);
 }
 
-void ifBindingError(){
-    printf("Evaluation error: improper binding in if\n");
+void ifArgumentError(){
+    printf("Evaluation error: no consequent following an if\n");
   texit(0);
 }

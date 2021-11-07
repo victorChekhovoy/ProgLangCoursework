@@ -57,12 +57,12 @@ Value *eval(Value *tree, Frame *frame) {
       Value *result = talloc(sizeof(Value));
 
       if (!strcmp(first->s, "if")) {
-          result = evalIf(args, frame);
+        return evalIf(args, frame);
       } else if (!strcmp(first->s, "let")){
         return evalLet(args, frame);
       } else {
-         evaluationError();
-         return NULL;
+        evaluationError();
+        return NULL;
       }
    }
    default: {
