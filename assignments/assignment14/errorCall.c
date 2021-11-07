@@ -23,10 +23,6 @@ void symbolNotFoundError(Value *symbol){
   texit(0);
 }
 
-void symbolNotFoundError(Value *symbol){
-  printf("Evaluation Error: Symbol %s not found in the lookup table.\n", symbol->s);
-  texit(0);
-}
 
 void evaluationError(){
   printf("Evaluation Error: unable to evaluate expression.\n");
