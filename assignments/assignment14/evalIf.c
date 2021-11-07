@@ -8,8 +8,8 @@
 #include "evalIf.h"
 #include "lookUpSymbol.h"
 #include "interpreter.h"
-#include "errorCall"
-  
+#include "errorCall.h"
+
 Value *evalIf(Value *args, Frame *frame){
     Value *bindings = car(args);
     Value *expression = cdr(args);

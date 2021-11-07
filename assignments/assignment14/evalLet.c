@@ -7,7 +7,7 @@
 #include "evalLet.h"
 #include "lookUpSymbol.h"
 #include "interpreter.h"
-#include "errorCall"
+#include "errorCall.h"
 
 void displayBinding(Value *binding){
   printf("Symbol: %s, Value: ", car(car(binding))->s);

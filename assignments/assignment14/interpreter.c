@@ -8,7 +8,7 @@
 #include "evalIf.h"
 #include "lookUpSymbol.h"
 #include "evalLet.h"
-#include "errorCall"
+#include "errorCall.h"
 
 Frame *makeFrame(){
   Frame *newFrame = talloc(sizeof(Frame));
