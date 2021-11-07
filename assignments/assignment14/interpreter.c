@@ -1,30 +1,19 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "tokenizer.h"
 #include "talloc.h"
 #include "linkedlist.h"
 #include <string.h>
-#include "tokenizer.h"
 #include <assert.h>
-#include "parser.h"
 #include "evalLet.h"
 #include "lookUpSymbol.h"
+#include "evalLet.h"
+#inlcude "errorCall.h"
 
 Frame *makeFrame(){
   Frame *newFrame = talloc(sizeof(Frame));
   newFrame->parent = NULL;
   newFrame->bindings = makeNull();
   return newFrame;
-}
-
-void symbolNotFound(Value *symbol){
-  printf("Evaluation Error: Symbol %s not found in the lookup table.\n", symbol->s);
-  texit(0);
-}
-
-void evaluationError(){
-  printf("Evaluation Error: unable to evaluate expression.\n");
-  texit(0);
 }
 
 void displaySymbol(Value *result){
@@ -57,7 +46,7 @@ Value *eval(Value *tree, Frame *frame) {
    case SYMBOL_TYPE: {
       Value *symbol = lookUpSymbol(tree, frame);
       if (isNull(symbol)){
-        symbolNotFound(tree);
+        symbolNotFoundError(tree);
       }
       return symbol;
    }
