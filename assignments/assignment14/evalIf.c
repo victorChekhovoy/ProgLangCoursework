@@ -8,11 +8,7 @@
 #include "evalIf.h"
 #include "lookUpSymbol.h"
 #include "interpreter.h"
-
-void ifBindingError(){
-    printf("Evaluation error: improper binding in if\n");
-  texit(0);
-}
+#include "errorCall"
 
 Value *evalIf(Value *args, Frame *frame){
     Value *bindings = car(args);
@@ -31,5 +27,5 @@ Value *evalIf(Value *args, Frame *frame){
         return eval(true_result, frame);
     }
     return args;
-    
+
 }

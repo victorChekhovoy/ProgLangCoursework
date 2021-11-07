@@ -30,3 +30,8 @@ void evaluationError(){
   printf("Evaluation Error: unable to evaluate expression.\n");
   texit(0);
 }
+
+void ifBindingError(){
+    printf("Evaluation error: improper binding in if\n");
+  texit(0);
+}

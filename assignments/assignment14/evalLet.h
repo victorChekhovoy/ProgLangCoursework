@@ -7,6 +7,4 @@
 
 Value *evalLet(Value *args, Frame *frame);
 
-void displayFrame(Frame *frame);
-
 #endif
