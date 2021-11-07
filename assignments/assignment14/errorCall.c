@@ -1,5 +1,7 @@
 #include "value.h"
 #include "talloc.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 void bindingError(){
   printf("Evaluation error: improper binding in let\n");
