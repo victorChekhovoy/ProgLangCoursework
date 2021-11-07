@@ -10,6 +10,9 @@
 #include "interpreter.h"
 #include "errorCall.h"
 
+
+// Takes in a some if statement and a frame and evaluates the statement and then returns the
+// corresponding value based on the boolean result
 Value *evalIf(Value *args, Frame *frame){
     Value *bindings = car(args);
     Value *expression = cdr(args);

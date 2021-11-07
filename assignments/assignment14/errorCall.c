@@ -23,7 +23,6 @@ void symbolNotFoundError(Value *symbol){
   texit(0);
 }
 
-
 void evaluationError(){
   printf("Evaluation Error: unable to evaluate expression.\n");
   texit(0);
