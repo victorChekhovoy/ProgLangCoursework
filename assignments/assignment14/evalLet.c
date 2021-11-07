@@ -84,7 +84,7 @@ Value *makeBinding(Value *letBinding, Frame *frame){
   newBinding->type = CONS_TYPE;
   newBinding->c.car = car(letBinding);
 
-  Value *variableValue = car(cdr(letBinding));
+  Value *variableValue = eval(car(cdr(letBinding)), frame);
   if (variableValue->type == SYMBOL_TYPE){
     newBinding->c.cdr = lookUpSymbol(variableValue, frame);
     if (isNull(newBinding->c.cdr)){
