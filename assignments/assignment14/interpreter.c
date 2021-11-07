@@ -5,6 +5,7 @@
 #include <string.h>
 #include <assert.h>
 #include "evalLet.h"
+#include "evalIf.h"
 #include "lookUpSymbol.h"
 #include "evalLet.h"
 #inlcude "errorCall.h"
@@ -57,10 +58,9 @@ Value *eval(Value *tree, Frame *frame) {
 
       if (!strcmp(first->s, "if")) {
           result = evalIf(args, frame);
-      else if (!strcmp(first->s, "let")){
+      } else if (!strcmp(first->s, "let")){
         return evalLet(args, frame);
-      }
-      else {
+      } else {
          evaluationError();
          return NULL;
       }
