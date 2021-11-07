@@ -18,14 +18,14 @@ Value *evalIf(Value *args, Frame *frame){
         ifArgumentError();
     }
 
-    Value *bool_exp = eval(car(args), frame);
-    Value *true_result = car(cdr(args));
-    Value *false_result = car(cdr(cdr(args)));
+    Value *boolExp = eval(car(args), frame);
+    Value *trueResult = car(cdr(args));
+    Value *falseResult = car(cdr(cdr(args)));
 
-    if (bool_exp->type == BOOL_TYPE && bool_exp->i == 0) {
-        return eval(false_result, frame);
+    if (boolExp->type == BOOL_TYPE && boolExp->i == 0) {
+        return eval(falseResult, frame);
     } else {
-        return eval(true_result, frame);
+        return eval(trueResult, frame);
     }
     return args;
 
