@@ -60,6 +60,8 @@ Value *eval(Value *tree, Frame *frame) {
         return evalIf(args, frame);
       } else if (!strcmp(first->s, "let")){
         return evalLet(args, frame);
+      } else if (!strcmp(first->s, "quote")){
+        return evalQuote(args, frame);
       } else {
         evaluationError();
         return NULL;
