@@ -54,6 +54,9 @@ Value *eval(Value *tree, Frame *frame) {
       if (isNull(symbol)){
         symbolNotFoundError(tree);
       }
+      else if (!strcmp(tree->s, "quote")){
+        printTree()
+      }
       return symbol;
    }
    case CONS_TYPE: {
@@ -61,7 +64,7 @@ Value *eval(Value *tree, Frame *frame) {
       Value *args = cdr(tree);
       Value *result = talloc(sizeof(Value));
 
-      if (!strcmp(first->s, "if")) {
+      if (!strcmp(first->s, "if")){
         return evalIf(args, frame);
       } else if (!strcmp(first->s, "let")){
         return evalLet(args, frame);
