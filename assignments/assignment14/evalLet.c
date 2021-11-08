@@ -9,6 +9,7 @@
 #include "interpreter.h"
 #include "errorCall.h"
 
+// This function takes a binding like that in let and prints it for debug purposes
 void displayBinding(Value *binding){
   printf("Symbol: %s, Value: ", car(car(binding))->s);
   Value *variableValue = cdr(car(binding));
@@ -36,6 +37,7 @@ void displayBinding(Value *binding){
   }
 }
 
+// This function takes a frame as input and prints the variables in it for debug purposes
 void displayFrame(Frame *frame){
   Value *currentBinding = frame->bindings;
   while (!isNull(currentBinding)){
@@ -44,18 +46,21 @@ void displayFrame(Frame *frame){
   }
 }
 
+// This function takes a binding as input, and checks if any of the elements in it are NULL
 void checkNullBinding(Value *letBinding){
   if ((isNull(letBinding)) || (isNull(car(letBinding))) || (isNull(car(cdr(letBinding))))){
     bindingError();
   }
 }
 
+// Checks if the variable in a binding is a symbol
 void checkProperBinding(Value *letBinding){
   if (car(letBinding)->type != SYMBOL_TYPE){
     bindingError();
   }
 }
 
+// Checks if a linked list contains the given symbol. The *value argument being passed must be of type SYMBOL_TYPE
 bool containsSymbol(Value *linkedList, Value *symbolNode){
   assert(symbolNode->type == SYMBOL_TYPE && "containsSymbol can only be run on a node of type SYMBOL_TYPE");
   while (!isNull(linkedList)){
@@ -67,6 +72,7 @@ bool containsSymbol(Value *linkedList, Value *symbolNode){
   return false;
 }
 
+// Takes a linked list as input, and return the tail of that list
 Value *getLastElement(Value *linkedList){
   Value *last = makeNull();
   while (!isNull(cdr(linkedList))){
@@ -76,6 +82,7 @@ Value *getLastElement(Value *linkedList){
   return last;
 }
 
+// Given a binding in raw format and a frame, creates a binding in the frame
 Value *makeBinding(Value *letBinding, Frame *frame){
   checkNullBinding(letBinding);
   checkProperBinding(letBinding);
@@ -97,6 +104,7 @@ Value *makeBinding(Value *letBinding, Frame *frame){
   return newBinding;
 }
 
+// Takes a set of bindings from let and a frame, and adds all of the listed bindings to the frame
 Frame *setVariables(Value *letBindings, Frame *frame){
   Value *currentBinding;
   Value *addedBindings = makeNull();
@@ -110,7 +118,6 @@ Frame *setVariables(Value *letBindings, Frame *frame){
       duplicateArgumentError(car(newBinding));
     }
     letBindingsDefined = cons(car(newBinding), letBindingsDefined);
-
 
     Value *bindingContainer = NULL;
     if (isNull(addedBindings)){
@@ -126,6 +133,7 @@ Frame *setVariables(Value *letBindings, Frame *frame){
   return frame;
 }
 
+// Takes a let expression and a frame as input, and evaluates the expression
 Value *evalLet(Value *args, Frame *frame){
   Value *bindings = car(args);
   Value *expression = cdr(args);
