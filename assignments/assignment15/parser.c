@@ -148,27 +148,38 @@ void printElement(Value *tree, bool printWhitespace){
   }
 }
 
-void printLinkedList(Value **tree, bool printParens){
+void printLinkedList(Value **tree, bool printParens, bool endWhitespace){
   if (!isNull(*tree)){
     if (printParens){
       printf("(");
     }
     Value *node = car(*tree);
-    if (node->type == CONS_TYPE){
-      printLinkedList(&node, true);
-    }
-    else{
-      if (cdr(*tree)->type != CONS_TYPE){
-        printElement(car(*tree), false);
+    Value *nextNode = car(cdr(*tree));
+    bool isNextNull = isNull(nextNode);
+    int nodeType = node->type;
+    if (nodeType == CONS_TYPE){
+      if (isNextNull){
+        printLinkedList(&node, true, false);
       }
       else{
-        printElement(car(*tree), true);
+        printLinkedList(&node, true, true);
+      }
+    }
+    else{
+      if (isNextNull){
+        printElement(node, false);
+      }
+      else{
+        printElement(node, true);
       }
     }
     *tree = cdr(*tree);
-    printLinkedList(tree, false);
+    printLinkedList(tree, false, false);
     if (printParens){
       printf(")");
+      if (endWhitespace){
+        printf(" ");
+      }
     }
   }
 }
@@ -177,7 +188,7 @@ void printTree(Value *tree){
   while (!isNull(tree)){
     switch (tree->type){
       case CONS_TYPE:
-        printLinkedList(&tree, false);
+        printLinkedList(&tree, false, false);
         break;
       default:
         printElement(tree, false);
