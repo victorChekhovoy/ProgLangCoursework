@@ -9,7 +9,7 @@
 #include "lookUpSymbol.h"
 #include "evalLet.h"
 #include "errorCall.h"
-
+#include "parser.h"
 
 // A utility function that creates a blank frame
 Frame *makeFrame(){
@@ -54,9 +54,6 @@ Value *eval(Value *tree, Frame *frame) {
       if (isNull(symbol)){
         symbolNotFoundError(tree);
       }
-      else if (!strcmp(tree->s, "quote")){
-        printTree()
-      }
       return symbol;
    }
    case CONS_TYPE: {
@@ -64,13 +61,17 @@ Value *eval(Value *tree, Frame *frame) {
       Value *args = cdr(tree);
       Value *result = talloc(sizeof(Value));
 
-      if (!strcmp(first->s, "if")){
+      if (!strcmp(first->s, "if")) {
         return evalIf(args, frame);
       } else if (!strcmp(first->s, "let")){
         return evalLet(args, frame);
       } else if (!strcmp(first->s, "quote")){
-        return evalQuote(args, frame);
-      } else {
+        if (length(args) != 1){
+          evaluationError();
+        }
+        return args;
+      }
+        else {
         evaluationError();
         return NULL;
       }
@@ -88,6 +89,7 @@ void interpret(Value *tree){
     Value *result = eval(currentS, makeFrame());
     tree = cdr(tree);
     currentS = car(tree);
-    displaySymbol(result);
+    printTree(result);
+
   }
 }

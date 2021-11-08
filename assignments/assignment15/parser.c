@@ -196,6 +196,7 @@ void printTree(Value *tree){
     }
     tree = cdr(tree);
   }
+  printf("\n");
 }
 
 /*
