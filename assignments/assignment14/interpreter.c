@@ -10,6 +10,8 @@
 #include "evalLet.h"
 #include "errorCall.h"
 
+
+// A utility function that creates a blank frame
 Frame *makeFrame(){
   Frame *newFrame = talloc(sizeof(Frame));
   newFrame->parent = NULL;
@@ -17,6 +19,8 @@ Frame *makeFrame(){
   return newFrame;
 }
 
+
+// Displays a Value for the output of interpret()
 void displaySymbol(Value *result){
   switch(result->type){
       case INT_TYPE:
@@ -42,6 +46,7 @@ void displaySymbol(Value *result){
   }
 }
 
+// Evaluates a single S-expression given in tree
 Value *eval(Value *tree, Frame *frame) {
   switch (tree->type)  {
    case SYMBOL_TYPE: {
@@ -71,6 +76,7 @@ Value *eval(Value *tree, Frame *frame) {
   }
 }
 
+// Given a Scheme program in a linked list format, evaluates all S-expressions in it
 void interpret(Value *tree){
   Value *currentS = car(tree);
   while (!isNull(currentS)){
