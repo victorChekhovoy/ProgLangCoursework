@@ -27,4 +27,10 @@ void quoteArgumentNumberError(int number);
 
 void defineArgumentNumberError(int number);
 
+void lambdaNonSymbolArguments();
+
+void lambdaNoCode();
+
+void functionArgumentNumberError(int params, int values);
+
 #endif

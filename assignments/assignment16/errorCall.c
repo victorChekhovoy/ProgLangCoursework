@@ -40,46 +40,64 @@ void ifArgumentError(){
 }
 
 void defineArgumentError(){
-  printf("Evaluation Error: improper variable binding in define");
+  printf("Evaluation Error: improper variable binding in define\n");
   texit(0);
 }
 
 void functionArgumentError(){
-  printf("Evaluation Error: improper variables in function call");
+  printf("Evaluation Error: improper variables in function call\n");
   texit(0);
 }
 
 void bindingWrongTypeError(){
-  printf("Evaluation Error: define must bind to a symbol");
+  printf("Evaluation Error: define must bind to a symbol\n");
 }
 
 void lambdaArgumentNumberError(int number){
   if (number > 2){
-    printf("Evaluation Error: too many arguments (%i) passed to lambda, when 2 are required", number);
+    printf("Evaluation Error: too many arguments (%i) passed to lambda, when 2 are required\n", number);
   } else if (number == 0){
-    printf("Evaluation Error: no arguments passed to lambda, when 2 are required");
+    printf("Evaluation Error: no arguments passed to lambda, when 2 are required\n");
   } else if (number < 2){
-    printf("Evaluation Error: too few arguments (%i) passed to lambda, when 2 are required", number);
+    printf("Evaluation Error: too few arguments (%i) passed to lambda, when 2 are required\n", number);
   }
   texit(0);
 }
 
 void quoteArgumentNumberError(int number){
   if (number > 1){
-    printf("Evaluation Error: too many arguments (%i) passed to quote, when 1 is required", number);
+    printf("Evaluation Error: too many arguments (%i) passed to quote, when 1 is required\n", number);
   } else if (number == 0){
-    printf("Evaluation Error: no arguments passed to lambda, when 2 are required");
+    printf("Evaluation Error: no arguments passed to lambda, when 2 are required\n");
   }
   texit(0);
 }
 
 void defineArgumentNumberError(int number){
   if (number > 2){
-    printf("Evaluation Error: too many arguments (%i) passed to define, when 2 are required", number);
+    printf("Evaluation Error: too many arguments (%i) passed to define, when 2 are required\n", number);
   } else if (number == 0){
-    printf("Evaluation Error: no arguments passed to define, when 2 are required");
+    printf("Evaluation Error: no arguments passed to define, when 2 are required\n");
   } else if (number < 2){
-    printf("Evaluation Error: too few arguments (%i) passed to define, when 2 are required", number);
+    printf("Evaluation Error: too few arguments (%i) passed to define, when 2 are required\n", number);
   }
   texit(0);
+}
+
+void lambdaNonSymbolArguments(){
+  printf("Evaluation Error: non-symbol arguments in lambda\n");
+  texit(0);
+}
+
+void lambdaNoCode(){
+  printf("Evaluation Error: no code following lambda\n");
+  texit(0);
+}
+
+void functionArgumentNumberError(int params, int values){
+  if (params < values){
+    printf("Evaluation Error: too many arguments passed (%i), expected %i\n", values, params);
+  } else{
+    printf("Evaluation Error: too few arguments passed (%i), expected %i\n", values, params);
+  }
 }

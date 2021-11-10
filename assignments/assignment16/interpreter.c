@@ -30,6 +30,15 @@ Value *makeClosure(Value *args, Value* code, Frame *frame){
   return newClosure;
 }
 
+bool checkSymbolEach(Value *list){
+  if (list->type == NULL_TYPE){
+    return true;
+  } else if (car(list)->type != SYMBOL_TYPE){
+    return false;
+  }
+  return checkSymbolEach(cdr(list));
+}
+
 Frame *defineVariable(Value *symbol, Value *variableValue, Frame *frame){
   if ((isNull(symbol)) || (isNull(variableValue))){
     defineArgumentError();
@@ -102,7 +111,13 @@ Value *eval(Value *tree, Frame *frame) {
         frame = defineVariable(variable, value, frame);
         return makeNull();
       } else if (!strcmp(first->s, "lambda")){
-        if (length(args) != 2){
+        if (!checkSymbolEach(car(args))){
+          lambdaNonSymbolArguments();
+        }
+        if (isNull(car(cdr(args)))){
+          lambdaNoCode();
+        }
+        if (length(args) > 3){
           lambdaArgumentNumberError(length(args));
         }
         return makeClosure(car(args), car(cdr(args)), frame);

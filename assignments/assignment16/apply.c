@@ -23,6 +23,12 @@ Frame *bindVariable(Value *param, Value *value, Frame *frame){
 }
 
 Frame *bindEach(Value *paramNames, Value *paramValues, Frame *frame){
+  if (length(paramNames) != length(paramValues)){
+    functionArgumentNumberError(length(paramNames), length(paramValues));
+  }
+  if (isNull(paramNames)){
+    return frame;
+  }
   frame = bindVariable(car(paramNames), car(paramValues), frame);
   return bindEach(cdr(paramNames), cdr(paramValues), frame);
 }

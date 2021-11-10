@@ -14,5 +14,8 @@
 #include "interpreter.h"
 
 Value *evalEach(Value *argsList, Frame *frame){
+  if(isNull(argsList)){
+    return argsList;
+  }
   return cons(eval(car(argsList), frame), evalEach(cdr(argsList), frame));
 }
