@@ -14,90 +14,47 @@ void syntaxError(){
   texit(0);
 }
 
-bool isOpen(Value *token){
-  return (token->type == OPEN_TYPE);
-}
-
-bool isClosed(Value *token){
-  return (token->type == CLOSE_TYPE);
-}
-
-bool isString(Value *token){
-  return (token->type == STR_TYPE);
-}
-
-Value *pop(Value **stack){
-  Value *poppedValue = talloc(sizeof(Value));
-  poppedValue = car(*stack);
-  *stack = cdr(*stack);
-  return poppedValue;
-}
-
-Value* push(Value *stack, Value *token){
-  stack = cons(token, stack);
-  return stack;
-}
-
-Value *parseStack(Value *stack, Value* tree){
-  Value *expression = cons(makeNull(), makeNull());
-  while ((!isOpen(car(stack))) && (!isNull(stack))) {
-    if(isClosed(car(stack))){
-      pop(&stack);
+// Takes in a tree, depth value, and token and adds the token to the tree
+Value *updateTree(Value *tree, int *depth, Value *token) {
+    if (token->type != CLOSE_TYPE) {
+        Value *temp = cons(token, tree);
+        tree = temp;
+        if (token->type == OPEN_TYPE) {
+            *depth = *depth + 1;
+        }
+    } else {
+        if (tree->type == NULL_TYPE || *depth < 1) {
+            syntaxError();
+        }
+        *depth = *depth - 1;
+        Value *subtree = makeNull();
+        while (car(tree)->type != OPEN_TYPE) {
+            Value *temp = cons(car(tree), subtree);
+            subtree = temp;
+            tree = cdr(tree);
+            if (tree->type == NULL_TYPE) {
+                syntaxError();
+            }
+        }
+        tree->c.car = subtree;
     }
-    else{
-      expression = cons(pop(&stack), expression);
-    }
-  }
-  pop(&stack);
-  stack = cons(expression, stack);
-  return stack;
+    return tree;
 }
-
-Value *parseExpression(Value *tree, Value **tokens, int *depth){
-  Value *stack = makeNull();
-  do{
-    while ((!isClosed(car(*tokens))) && (!isNull(*tokens))){
-      if (isOpen(car(*tokens))){
-        (*depth)++;
-      }
-      stack = cons(pop(tokens), stack);
-    }
-    if (isClosed(car(*tokens))){
-      (*depth)--;
-      stack = cons(pop(tokens), stack);
-      stack = parseStack(stack, tree);
-    }
-  } while (((*depth) != 0) && !isNull(*tokens));
-  tree = cons(pop(&stack), tree);
-  return tree;
-}
-
-Value *parseAtom(Value *tree, Value **tokens){
-  Value *atomList = makeNull();
-  while (!isNull(*tokens)){
-    atomList = cons(car(*tokens), atomList);
-    *tokens = cdr(*tokens);
-  }
-  return atomList;
-}
-
+// Takes a list of tokens and returns a pointer to the parse tree
 Value *parse(Value *tokens) {
-
-    assert(tokens != NULL && "Error (parse): null pointer");
-
     Value *tree = makeNull();
     int depth = 0;
-    if (!isOpen(car(tokens))){
-      tree = parseAtom(tree, &tokens);
-    }
-    while (!isNull(tokens)) {
-        tree = parseExpression(tree, &tokens, &depth);
+    Value *curNode = tokens;
+    assert(curNode != NULL && "Parse error: token list is null");
+    while (curNode->type != NULL_TYPE) {
+        tree = updateTree(tree, &depth, car(curNode));
+        Value *next = cdr(curNode);
+        curNode = next;
     }
     if (depth != 0) {
         syntaxError();
     }
-    tree = reverse(tree);
-    return tree;
+    return reverse(tree);
 }
 
 void printElement(Value *tree, bool printWhitespace){

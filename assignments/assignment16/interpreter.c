@@ -117,9 +117,9 @@ Value *eval(Value *tree, Frame *frame) {
 // Given a Scheme program in a linked list format, evaluates all S-expressions in it
 void interpret(Value *tree){
   Value *currentS = car(tree);
-  
+  Frame *frame = makeFrame();
   while (!isNull(currentS)){
-    Value *result = eval(currentS, makeFrame());
+    Value *result = eval(currentS, frame);
     tree = cdr(tree);
     currentS = car(tree);
     printTree(result);
