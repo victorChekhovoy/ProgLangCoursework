@@ -19,4 +19,12 @@ void defineArgumentError();
 
 void functionArgumentError();
 
+void bindingWrongTypeError();
+
+void lambdaArgumentNumberError(int number);
+
+void quoteArgumentNumberError(int number);
+
+void defineArgumentNumberError(int number);
+
 #endif

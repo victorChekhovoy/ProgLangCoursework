@@ -87,18 +87,23 @@ Value *eval(Value *tree, Frame *frame) {
         return evalLet(args, frame);
       } else if (!strcmp(first->s, "quote")){
         if (length(args) != 1){
-          evaluationError();
+          quoteArgumentNumberError(length(args));
         }
         return args;
       } else if (!strcmp(first->s, "define")){
         if (length(args) != 2){
-          evaluationError();
+          defineArgumentNumberError(length(args));
         }
-        frame = defineVariable(car(args), car(cdr(args)), frame);
+        Value *variable = car(args);
+        Value *value = eval(car(cdr(args)), frame);
+        if (variable->type != SYMBOL_TYPE){
+          bindingWrongTypeError();
+        }
+        frame = defineVariable(variable, value, frame);
         return makeNull();
       } else if (!strcmp(first->s, "lambda")){
         if (length(args) != 2){
-          evaluationError();
+          lambdaArgumentNumberError(length(args));
         }
         return makeClosure(car(args), car(cdr(args)), frame);
       }

@@ -48,3 +48,38 @@ void functionArgumentError(){
   printf("Evaluation Error: improper variables in function call");
   texit(0);
 }
+
+void bindingWrongTypeError(){
+  printf("Evaluation Error: define must bind to a symbol");
+}
+
+void lambdaArgumentNumberError(int number){
+  if (number > 2){
+    printf("Evaluation Error: too many arguments (%i) passed to lambda, when 2 are required", number);
+  } else if (number == 0){
+    printf("Evaluation Error: no arguments passed to lambda, when 2 are required");
+  } else if (number < 2){
+    printf("Evaluation Error: too few arguments (%i) passed to lambda, when 2 are required", number);
+  }
+  texit(0);
+}
+
+void quoteArgumentNumberError(int number){
+  if (number > 1){
+    printf("Evaluation Error: too many arguments (%i) passed to quote, when 1 is required", number);
+  } else if (number == 0){
+    printf("Evaluation Error: no arguments passed to lambda, when 2 are required");
+  }
+  texit(0);
+}
+
+void defineArgumentNumberError(int number){
+  if (number > 2){
+    printf("Evaluation Error: too many arguments (%i) passed to define, when 2 are required", number);
+  } else if (number == 0){
+    printf("Evaluation Error: no arguments passed to define, when 2 are required");
+  } else if (number < 2){
+    printf("Evaluation Error: too few arguments (%i) passed to define, when 2 are required", number);
+  }
+  texit(0);
+}
