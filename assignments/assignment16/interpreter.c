@@ -69,6 +69,9 @@ void displaySymbol(Value *result){
       case DOUBLE_TYPE:
         printf("%f\n", result->d);
         break;
+      case CLOSURE_TYPE:
+        printf("#procedure\n");
+        break;
       default:
         printf("\n");
         break;

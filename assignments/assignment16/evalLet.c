@@ -74,7 +74,7 @@ bool containsSymbol(Value *linkedList, Value *symbolNode){
 
 // Takes a linked list as input, and return the tail of that list
 Value *getLastElement(Value *linkedList){
-  Value *last = makeNull();
+  Value *last = car(linkedList);
   while (!isNull(cdr(linkedList))){
     last = car(linkedList);
     linkedList = cdr(linkedList);
