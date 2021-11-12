@@ -100,6 +100,11 @@ void printElement(Value *tree, bool printWhitespace){
           printf(" ");
         }
         break;
+    case CLOSURE_TYPE:
+      printf("#<procedure>");
+      if (printWhitespace){
+        printf(" ");
+      }
     default:
         break;
   }
