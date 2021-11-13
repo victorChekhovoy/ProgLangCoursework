@@ -9,7 +9,8 @@
 #include "parser.h"
 #include "lookUpSymbol.h"
 
-
+// Takes a frame and a symbol and goes through the bindings of the frame comparing to the target symbol
+// then checks the parent frame if there is one
 Value *lookUpSymbol(Value *targetSymbol, Frame *frame){
   Value *bindings = frame->bindings;
   while(!isNull(bindings)){

@@ -21,7 +21,7 @@ Frame *makeFrame(){
   return newFrame;
 }
 
-
+// Checks if an expression has the same argument for the car and cdr
 void checkDuplicateArgs(Value *args){
   if (containsSymbol(cdr(args), car(args))){
     lambdaDuplicateArgumentError(car(args));
@@ -31,6 +31,7 @@ void checkDuplicateArgs(Value *args){
   }
 }
 
+// Creates a new closure from the given args, code, and frame
 Value *makeClosure(Value *args, Value* code, Frame *frame){
   Value *newClosure = talloc(sizeof(Value));
   checkDuplicateArgs(args);
@@ -41,6 +42,7 @@ Value *makeClosure(Value *args, Value* code, Frame *frame){
   return newClosure;
 }
 
+// Checks if each element in a list is a symbol
 bool checkSymbolEach(Value *list){
   if (isNull(list)){
     return true;
@@ -50,6 +52,7 @@ bool checkSymbolEach(Value *list){
   return checkSymbolEach(cdr(list));
 }
 
+// Creates a new variable and makes it the binding for the frame then returns the frame
 Frame *defineVariable(Value *symbol, Value *variableValue, Frame *frame){
   if ((isNull(symbol)) || (isNull(variableValue))){
     defineArgumentError();
