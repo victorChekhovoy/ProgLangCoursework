@@ -150,6 +150,7 @@ Value *reverseHelper(Value *list, Value *reversed_list){
     }
 }
 
+// Reverses a linked list
 Value *reverse(Value *list){
   Value *reversed_list = makeNull();
   reversed_list = reverseHelper(list, reversed_list);

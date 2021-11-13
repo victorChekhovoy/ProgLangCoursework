@@ -134,7 +134,7 @@ char *readComment(){
   return output;
 }
 
-//
+// checks if a number is a valid int or double
 bool validNumber(char *symbol, int length, bool dots_allowed){
   int dots = dots_allowed;
   int i = 0;
@@ -209,6 +209,7 @@ char *errorCheck(char *input, int length){
   return NULL;
 }
 
+// reads a multi-character symbol from the input file
 char *readMultiChar(char currentChar, int *index){
   char *output = NULL;
   if (currentChar == '"'){
@@ -235,6 +236,7 @@ char *readMultiChar(char currentChar, int *index){
   return output;
 }
 
+//determines the type of the symbol, given the raw string input
 int determineType(char *symbol, int length){
 
   if ((symbol[0] == '"') && (symbol[length] == '"')){
@@ -255,6 +257,7 @@ int determineType(char *symbol, int length){
   return SYMBOL_TYPE;
 }
 
+// creates a new symbol, given its type and raw string value
 Value *makeNewSymbol(int type, char *rawSymbol, int length){
   Value *output = NULL;
   switch(type){

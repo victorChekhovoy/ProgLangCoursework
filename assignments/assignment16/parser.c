@@ -8,7 +8,7 @@
 #include <assert.h>
 
 
-
+// Throws a simple syntax error
 void syntaxError(){
   printf("SYNTAX ERROR\n");
   texit(0);
@@ -40,6 +40,7 @@ Value *updateTree(Value *tree, int *depth, Value *token) {
     }
     return tree;
 }
+
 // Takes a list of tokens and returns a pointer to the parse tree
 Value *parse(Value *tokens) {
     Value *tree = makeNull();
@@ -57,6 +58,7 @@ Value *parse(Value *tokens) {
     return reverse(tree);
 }
 
+//Prints a single element in a parse tree
 void printElement(Value *tree, bool printWhitespace){
   switch (tree->type){
     case INT_TYPE:
@@ -110,6 +112,7 @@ void printElement(Value *tree, bool printWhitespace){
   }
 }
 
+// Prints a linked list inside the parse tree
 void printLinkedList(Value **tree, bool printParens, bool endWhitespace){
   if (!isNull(*tree)){
     if (printParens){
@@ -146,6 +149,7 @@ void printLinkedList(Value **tree, bool printParens, bool endWhitespace){
   }
 }
 
+//Prints the parse tree
 void printTree(Value *tree){
   while (!isNull(tree)){
     switch (tree->type){

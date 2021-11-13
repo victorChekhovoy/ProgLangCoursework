@@ -12,6 +12,7 @@
 #include "parser.h"
 #include "interpreter.h"
 
+//Binds a single argument in a function call to a parameter in the closure
 Frame *bindVariable(Value *param, Value *value, Frame *frame){
   if ((isNull(param)) || (isNull(value))){
     functionArgumentError();
@@ -22,6 +23,8 @@ Frame *bindVariable(Value *param, Value *value, Frame *frame){
   return frame;
 }
 
+//Binds each argument passed in a function call to a respective parameter in the closure
+//Throws an error if the number of arguments is incorrect
 Frame *bindEach(Value *paramNames, Value *paramValues, Frame *frame){
   if (length(paramNames) != length(paramValues)){
     functionArgumentNumberError(length(paramNames), length(paramValues));
@@ -33,6 +36,7 @@ Frame *bindEach(Value *paramNames, Value *paramValues, Frame *frame){
   return bindEach(cdr(paramNames), cdr(paramValues), frame);
 }
 
+//Given a closure and a list of arguments, evaluates the function given by the closure
 Value *apply(Value *closure, Value *arguments){
   Frame *functionFrame = talloc(sizeof(Frame));
   functionFrame->parent = closure->cl.frame;

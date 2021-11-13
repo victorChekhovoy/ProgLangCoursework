@@ -13,6 +13,7 @@
 #include "apply.h"
 #include "interpreter.h"
 
+//Evaluates each expression in a linked list
 Value *evalEach(Value *argsList, Frame *frame){
   if(isNull(argsList)){
     return argsList;

@@ -5,6 +5,7 @@
 
 Value *activeList = NULL;
 
+//Allocates memory and keeps track of it for garbage collection
 void *talloc(size_t size){
   if (activeList == NULL){
     activeList = malloc(sizeof(Value));
@@ -23,6 +24,7 @@ void *talloc(size_t size){
   return outputPointer;
 }
 
+//Cleans a Value type variable
 void cleanNode(Value *node){
   if (node != NULL){
     int type = node->type;
@@ -58,15 +60,14 @@ void cleanNode(Value *node){
   }
 }
 
-
+//Frees activeList and all values in it
 void tfree(){
   cleanNode(activeList);
   activeList = NULL;
 }
 
-
+//Frees all variables and exits the execution process
 void texit(int status){
   tfree();
   exit(status);
-  return;
 }
