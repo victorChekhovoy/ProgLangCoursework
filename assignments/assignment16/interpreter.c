@@ -1,3 +1,36 @@
+
+Skip to content
+Pull requests
+Issues
+Marketplace
+Explore
+@ababinet
+victorChekhovoy /
+ProgLangCoursework
+Public
+
+1
+0
+
+    0
+
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+
+    Insights
+
+ProgLangCoursework/assignments/assignment16/interpreter.c
+@victorChekhovoy
+victorChekhovoy Fixed lambda error checking and error call functions
+Latest commit e859c71 3 minutes ago
+History
+1 contributor
+162 lines (151 sloc) 4.1 KB
 #include <stdlib.h>
 #include <stdio.h>
 #include "talloc.h"
@@ -21,8 +54,19 @@ Frame *makeFrame(){
   return newFrame;
 }
 
+
+void checkDuplicateArgs(Value *args){
+  if (containsSymbol(cdr(args), car(args))){
+    lambdaDuplicateArgumentError(car(args));
+  }
+  if (!isNull(args)){
+    return checkDuplicateArgs(cdr(args));
+  }
+}
+
 Value *makeClosure(Value *args, Value* code, Frame *frame){
   Value *newClosure = talloc(sizeof(Value));
+  checkDuplicateArgs(args);
   newClosure->type = CLOSURE_TYPE;
   newClosure->cl.paramNames = args;
   newClosure->cl.functionCode = code;
@@ -149,3 +193,19 @@ void interpret(Value *tree){
 
   }
 }
+
+    © 2021 GitHub, Inc.
+    Terms
+    Privacy
+    Security
+    Status
+    Docs
+
+    Contact GitHub
+    Pricing
+    API
+    Training
+    Blog
+    About
+
+Loading complete
