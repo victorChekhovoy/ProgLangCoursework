@@ -62,7 +62,7 @@ void checkProperBinding(Value *letBinding){
 
 // Checks if a linked list contains the given symbol. The *value argument being passed must be of type SYMBOL_TYPE
 bool containsSymbol(Value *linkedList, Value *symbolNode){
-  assert(symbolNode->type == SYMBOL_TYPE && "containsSymbol can only be run on a node of type SYMBOL_TYPE");
+  assert((symbolNode->type == SYMBOL_TYPE) || (symbolNode->type == NULL_TYPE) && "containsSymbol can only be run on a node of type SYMBOL_TYPE");
   while (!isNull(linkedList)){
     if (strcmp(car(linkedList)->s, symbolNode->s) == 0){
       return true;
@@ -141,10 +141,14 @@ Value *evalLet(Value *args, Frame *frame){
   if (bindings->type != CONS_TYPE){
     bindingError();
   }
-  frame = setVariables(bindings, frame);
+  Frame *letFrame = talloc(sizeof(Frame));
+  letFrame->parent = frame;
+  letFrame->bindings = makeNull();
+  letFrame = setVariables(bindings, letFrame);
+  //frame = setVariables(bindings, frame);
   Value *returnValue = getLastElement(expression);
   if (isNull(returnValue)){
     letArgsError();
   }
-  return eval(returnValue, frame);
+  return eval(returnValue, letFrame);
 }

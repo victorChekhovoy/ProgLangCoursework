@@ -21,8 +21,19 @@ Frame *makeFrame(){
   return newFrame;
 }
 
+
+void checkDuplicateArgs(Value *args){
+  if (containsSymbol(cdr(args), car(args))){
+    lambdaDuplicateArgumentError(car(args));
+  }
+  if (!isNull(args)){
+    return checkDuplicateArgs(cdr(args));
+  }
+}
+
 Value *makeClosure(Value *args, Value* code, Frame *frame){
   Value *newClosure = talloc(sizeof(Value));
+  checkDuplicateArgs(args);
   newClosure->type = CLOSURE_TYPE;
   newClosure->cl.paramNames = args;
   newClosure->cl.functionCode = code;
