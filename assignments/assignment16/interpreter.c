@@ -1,36 +1,3 @@
-
-Skip to content
-Pull requests
-Issues
-Marketplace
-Explore
-@ababinet
-victorChekhovoy /
-ProgLangCoursework
-Public
-
-1
-0
-
-    0
-
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-
-    Insights
-
-ProgLangCoursework/assignments/assignment16/interpreter.c
-@victorChekhovoy
-victorChekhovoy Fixed lambda error checking and error call functions
-Latest commit e859c71 3 minutes ago
-History
-1 contributor
-162 lines (151 sloc) 4.1 KB
 #include <stdlib.h>
 #include <stdio.h>
 #include "talloc.h"
@@ -75,7 +42,7 @@ Value *makeClosure(Value *args, Value* code, Frame *frame){
 }
 
 bool checkSymbolEach(Value *list){
-  if (list->type == NULL_TYPE){
+  if (isNull(list)){
     return true;
   } else if (car(list)->type != SYMBOL_TYPE){
     return false;
