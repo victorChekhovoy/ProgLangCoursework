@@ -100,4 +100,10 @@ void functionArgumentNumberError(int params, int values){
   } else{
     printf("Evaluation Error: too few arguments passed (%i), expected %i\n", values, params);
   }
+  texit(0);
+}
+
+void lambdaDuplicateArgumentError(Value *symbol){
+  printf("Evaluation error: duplicate identifier %s in lambda\n", symbol->s);
+  texit(0);
 }
