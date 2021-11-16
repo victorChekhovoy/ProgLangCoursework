@@ -12,6 +12,8 @@
 #include "parser.h"
 #include "apply.h"
 #include "evalEach.h"
+#include "builtIn.h"
+
 
 // A utility function that creates a blank frame
 Frame *makeFrame(){
@@ -112,7 +114,7 @@ Value *eval(Value *tree, Frame *frame) {
       } else if (!strcmp(first->s, "let")){
         return evalLet(args, frame);
       } else if (!strcmp(first->s, "quote")){
-        if (length(args) != 1){
+        if (length(args) > 1){
           quoteArgumentNumberError(length(args));
         }
         return args;
@@ -154,9 +156,13 @@ Value *eval(Value *tree, Frame *frame) {
 // Given a Scheme program in a linked list format, evaluates all S-expressions in it
 void interpret(Value *tree){
   Value *currentS = car(tree);
-  Frame *frame = makeFrame();
+  Frame *globalFrame = makeFrame();
+  bindPrimitiveFunction("car", &builtInCar, globalFrame);
+  bindPrimitiveFunction("cdr", &builtInCdr, globalFrame);
+  bindPrimitiveFunction("+", &builtInAdd, globalFrame);
+  bindPrimitiveFunction("null?", &builtInNull, globalFrame);
   while (!isNull(currentS)){
-    Value *result = eval(currentS, frame);
+    Value *result = eval(currentS, globalFrame);
     tree = cdr(tree);
     currentS = car(tree);
     printTree(result);

@@ -34,4 +34,9 @@ void lambdaNoCode();
 void functionArgumentNumberError(int params, int values);
 
 void lambdaDuplicateArgumentError(Value *symbol);
+
+void nullNoArgumentsError();
+
+void nullTooManyArgumentsError(int argCount);
+
 #endif

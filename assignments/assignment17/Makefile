@@ -8,7 +8,8 @@ ifeq ($(USE_BINARIES),yes)
 	       lib/value.h interpreter.h
 else
   SRCS = linkedlist.c talloc.c main.c tokenizer.c parser.c interpreter.c \
-					evalLet.c lookUpSymbol.c evalIf.c errorCall.c evalEach.c apply.c
+					evalLet.c lookUpSymbol.c evalIf.c errorCall.c evalEach.c apply.c \
+					builtIn.c
   HDRS = tokenizer.h linkedlist.h talloc.h parser.h value.h interpreter.h
 endif
 

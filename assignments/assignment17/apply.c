@@ -36,11 +36,18 @@ Frame *bindEach(Value *paramNames, Value *paramValues, Frame *frame){
   return bindEach(cdr(paramNames), cdr(paramValues), frame);
 }
 
+Value *applyBuiltIn(Value *function, Value *args){
+  return (*(function->pf))(args);
+}
+
 //Given a closure and a list of arguments, evaluates the function given by the closure
-Value *apply(Value *closure, Value *arguments){
+Value *apply(Value *closure, Value *args){
+  if (closure->type == PRIMITIVE_TYPE){
+    return applyBuiltIn(closure, args);
+  }
   Frame *functionFrame = talloc(sizeof(Frame));
   functionFrame->parent = closure->cl.frame;
   functionFrame->bindings = makeNull();
-  functionFrame = bindEach(closure->cl.paramNames, arguments, functionFrame);
+  functionFrame = bindEach(closure->cl.paramNames, args, functionFrame);
   return eval(closure->cl.functionCode, functionFrame);
 }
