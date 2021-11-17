@@ -129,3 +129,9 @@ void nullTooManyArgumentsError(int argCount){
   printf("Evaluation Error: too many arguments (%i) passed to null?, 1 required\n", argCount);
   texit(0);
 }
+
+//Throws an error if + does not have numbers as arguments
+void builtInAddArgumentTypeError(){
+  printf("Evaluation Error: + must take numbers.\n");
+  texit(0);
+}

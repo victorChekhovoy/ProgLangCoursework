@@ -62,16 +62,14 @@ Value *builtInAdd(Value *args) {
   double doubleSum = 0;
   
   while(args->type != NULL_TYPE){
-    if (first->type == DOUBLE_TYPE){
-      doubleSum = doubleSum + (double)integerSum + first->d;
+    if (car(args)->type == INT_TYPE){
+      integerSum += car(args)->i;
+    } else if (car(args)->type == DOUBLE_TYPE){
+      doubleSum = doubleSum + (double)integerSum + car(args)->d;
       integerSum = 0;
       result->type = DOUBLE_TYPE;
-
-    }else if(first->type == INT_TYPE){
-      integerSum = integerSum + first->i;
-    }else{
-      printf("Evaluation Error: + must take numbers.\n");
-      texit(0);
+    } else {
+      builtInAddArgumentTypeError();
     }
     args = cdr(args);
   }
