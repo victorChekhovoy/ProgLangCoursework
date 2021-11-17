@@ -57,7 +57,6 @@ Value *builtInCdr(Value *args) {
 Value *builtInAdd(Value *args) {
   Value *result = talloc(sizeof(Value));
   result->type = INT_TYPE;
-  Value *first = car(args);
   int integerSum = 0;
   double doubleSum = 0;
   
