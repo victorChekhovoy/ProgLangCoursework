@@ -39,4 +39,6 @@ void nullNoArgumentsError();
 
 void nullTooManyArgumentsError(int argCount);
 
+void builtInAddArgumentTypeError();
+
 #endif
