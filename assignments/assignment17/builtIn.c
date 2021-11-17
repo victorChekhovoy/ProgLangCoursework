@@ -53,42 +53,34 @@ Value *builtInCar(Value *args) {
 Value *builtInCdr(Value *args) {
    return cdr(args);
 }
-
+  
 Value *builtInAdd(Value *args) {
+  Value *result = talloc(sizeof(Value));
+  result->type = INT_TYPE;
   Value *first = car(args);
-  Value *second = car(cdr(args));
-  Value *remainder = cdr(cdr(args));
-  Value *firstTwoSummed = makeNull();
-  if ((first->type == INT_TYPE) && (second->type == INT_TYPE)){
-    firstTwoSummed = talloc(sizeof(Value));
-    firstTwoSummed->type = INT_TYPE;
-    firstTwoSummed->d = first->i + second->i;
-  }
-  else {
-    double firstValue, secondValue;
-    if (first->type == INT_TYPE){
-      firstValue = (double) first->i;
-    } else {
-      firstValue = first->d;
+  int integerSum = 0;
+  double doubleSum = 0;
+  
+  while(args->type != NULL_TYPE){
+    if (first->type == DOUBLE_TYPE){
+      doubleSum = doubleSum + (double)integerSum + first->d;
+      integerSum = 0;
+      result->type = DOUBLE_TYPE;
+
+    }else if(first->type == INT_TYPE){
+      integerSum = integerSum + first->i;
+    }else{
+      printf("Evaluation Error: + must take numbers.\n");
+      texit(0);
     }
-
-    if (second->type == INT_TYPE){
-      secondValue = (double) second->i;
-    } else {
-      secondValue = second->d;
-    }
-
-    double addedValue = firstValue + secondValue;
-    firstTwoSummed = talloc(sizeof(Value));
-    firstTwoSummed->type = DOUBLE_TYPE;
-    firstTwoSummed->d = addedValue;
+    args = cdr(args);
   }
-
-  if (isNull(remainder)){
-    return firstTwoSummed;
+  if(result->type == DOUBLE_TYPE){
+    result->d = doubleSum;
+  }else if (result->type == INT_TYPE){
+    result->i = integerSum;
   }
-  return builtInAdd(cons(firstTwoSummed, remainder));
-
+  return result;
 }
 
 void bindPrimitiveFunction(char *name, Value *(*function)(struct Value *), Frame *frame) {
