@@ -53,7 +53,8 @@ Value *builtInCar(Value *args) {
 Value *builtInCdr(Value *args) {
    return cdr(args);
 }
-  
+
+// Takes in the arguments for a + operation and performs the arithmatic, then returns the result
 Value *builtInAdd(Value *args) {
   Value *result = talloc(sizeof(Value));
   result->type = INT_TYPE;
