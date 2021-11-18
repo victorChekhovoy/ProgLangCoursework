@@ -65,35 +65,119 @@ Frame *defineVariable(Value *symbol, Value *variableValue, Frame *frame){
   return frame;
 }
 
-// Displays a Value for the output of interpret()
-void displaySymbol(Value *result){
-  switch(result->type){
-      case INT_TYPE:
-        printf("%i\n", result->i);
-        break;
-      case BOOL_TYPE:
-        if (result->i == 1){
-          printf("#t\n");
-        }
-        if (result->i == 0){
-          printf("#f\n");
+
+//Prints a single element in a tree
+void printE(Value *tree, bool printWhitespace){
+  switch (tree->type){
+    case INT_TYPE:
+        printf("%i", tree->i);
+        if (printWhitespace){
+          printf(" ");
         }
         break;
-      case STR_TYPE:
-        printf("\"%s\"\n", result->s);
+    case DOUBLE_TYPE:
+        printf("%g", tree->d);
+        if (printWhitespace){
+          printf(" ");
+        }
         break;
-      case DOUBLE_TYPE:
-        printf("%f\n", result->d);
+    case STR_TYPE:
+        printf("\"%s\"", tree->s);
+        if (printWhitespace){
+          printf(" ");
+        }
         break;
-      case CLOSURE_TYPE:
-        printf("#procedure\n");
+    case PTR_TYPE:
+        printf("<%p>", tree->p);
+        if (printWhitespace){
+          printf(" ");
+        }
         break;
-      default:
-        printf("\n");
+    case BOOL_TYPE:
+        if (tree->i == 1){
+          printf("#t");
+        }
+        else{
+          printf("#f");
+        }
+        if (printWhitespace){
+          printf(" ");
+        }
+        break;
+    case SYMBOL_TYPE:
+        printf("%s", tree->s);
+        if (printWhitespace){
+          printf(" ");
+        }
+        break;
+    case CLOSURE_TYPE:
+      printf("#<procedure>");
+      if (printWhitespace){
+        printf(" ");
+      }
+    default:
         break;
   }
 }
 
+// Prints a linked list inside the tree
+void printLL(Value **tree, bool printParens, bool endWhitespace){
+  if (!isNull(*tree)){
+    if (printParens){
+      printf("(");
+    }
+    Value *node = car(*tree);
+    Value *nextNode = car(cdr(*tree));
+    bool isNextNull = isNull(nextNode);
+    int nodeType = node->type;
+    if (nodeType == CONS_TYPE){
+      if (isNextNull){
+        printLL(&node, true, false);
+      }
+      else{
+        printLL(&node, true, true);
+      }
+    } else if ((cdr(*tree)->type != CONS_TYPE) && (!isNull(cdr(*tree))) && (!isNull(node))) {
+      //printf("(");
+      printE(node, true);
+      printf(". ");
+      printE(cdr(*tree), false);
+      //printf(")");
+    }
+    else{
+      if (isNextNull){
+        printE(node, false);
+      }
+      else{
+        printE(node, true);
+      }
+    }
+    *tree = cdr(*tree);
+    printLL(tree, false, false);
+    if (printParens){
+      printf(")");
+      if (endWhitespace){
+        printf(" ");
+      }
+    }
+  }
+}
+
+//Prints the parse tree
+void printResult(Value *result){
+  while (!isNull(result)){
+    switch (result->type){
+      case CONS_TYPE:
+        printLL(&result, false, false);
+        break;
+      default:
+        printE(result, false);
+        break;
+    }
+    result = cdr(result);
+  }
+  printf("\n");
+}
 // Evaluates a single S-expression given in tree
 Value *eval(Value *tree, Frame *frame) {
   switch (tree->type)  {
@@ -161,11 +245,12 @@ void interpret(Value *tree){
   bindPrimitiveFunction("cdr", &builtInCdr, globalFrame);
   bindPrimitiveFunction("+", &builtInAdd, globalFrame);
   bindPrimitiveFunction("null?", &builtInNull, globalFrame);
+  bindPrimitiveFunction("cons", &builtInCons, globalFrame);
   while (!isNull(currentS)){
     Value *result = eval(currentS, globalFrame);
     tree = cdr(tree);
     currentS = car(tree);
-    printTree(result);
+    printResult(result);
 
   }
 }

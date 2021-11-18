@@ -135,3 +135,43 @@ void builtInAddArgumentTypeError(){
   printf("Evaluation Error: + must take numbers.\n");
   texit(0);
 }
+
+void carTooManyArgumentsError(int inputLength){
+  printf("Evaluation Error: too many arguments (%i) passed to car, 1 expected\n", inputLength);
+  texit(0);
+}
+
+void carNoArgumentsError(){
+  printf("Evaluation Error: no arguments passed to car, 1 required\n");
+  texit(0);
+}
+
+void carInvalidArgumentTypeError(){
+  printf("Evaluation Error: wrong type passed to car, expected list\n");
+  texit(0);
+}
+
+void cdrTooManyArgumentsError(int inputLength){
+  printf("Evaluation Error: too many arguments (%i) passed to cdr, 1 expected\n", inputLength);
+  texit(0);
+}
+
+void cdrNoArgumentsError(){
+  printf("Evaluation Error: no arguments passed to cdr, 1 required\n");
+  texit(0);
+}
+
+void cdrInvalidArgumentTypeError(){
+  printf("Evaluation Error: wrong type passed to cdr, expected list\n");
+  texit(0);
+}
+
+void consTooManyArgumentsError(int inputLength){
+  printf("Evaluation Error: too many arguments (%i) passed to cons, w expected\n", inputLength);
+  texit(0);
+}
+
+void consNoArgumentsError(){
+  printf("Evaluation Error: no arguments passed to cons, 2 required\n");
+  texit(0);
+}

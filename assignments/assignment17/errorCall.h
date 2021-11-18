@@ -41,4 +41,20 @@ void nullTooManyArgumentsError(int argCount);
 
 void builtInAddArgumentTypeError();
 
+void carTooManyArgumentsError(int inputLength);
+
+void carNoArgumentsError();
+
+void cdrTooManyArgumentsError(int inputLength);
+
+void cdrNoArgumentsError();
+
+void consTooManyArgumentsError(int inputLength);
+
+void consNoArgumentsError();
+
+void carInvalidArgumentTypeError();
+
+void cdrInvalidArgumentTypeError();
+
 #endif

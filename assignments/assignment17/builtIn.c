@@ -46,12 +46,70 @@ Value *builtInNull(Value *args) {
   }
 }
 
+bool isDottedPair(Value *input){
+  if ((car(input)->type != CONS_TYPE) && (!isNull(car(input)))){
+    if ((cdr(input)->type != CONS_TYPE) && (!isNull(cdr(input)))){
+      return true;
+    }
+  }
+  return false;
+}
+
 Value *builtInCar(Value *args) {
-   return car(args);
+  Value *input = car(args);
+  int inputLength = length(args);
+  if (inputLength > 1) {
+    carTooManyArgumentsError(inputLength);
+  } else if (inputLength == 0) {
+    carNoArgumentsError();
+  }
+  if (input->type != CONS_TYPE){
+    carInvalidArgumentTypeError();
+    return NULL;
+  } else if (isDottedPair(input)) {
+    return car(input);
+  } else {
+    return car(car(input));
+  }
 }
 
 Value *builtInCdr(Value *args) {
-   return cdr(args);
+  Value *input = car(args);
+  int inputLength = length(input);
+  if (inputLength > 1) {
+    cdrTooManyArgumentsError(inputLength);
+  } else if (inputLength == 0) {
+    cdrNoArgumentsError();
+  }
+  if (input->type != CONS_TYPE){
+    cdrInvalidArgumentTypeError();
+    return NULL;
+  } else if (isDottedPair(input)) {
+    return cdr(input);
+  } else {
+    return cons(cdr(car(input)), makeNull());
+  }
+}
+
+Value *builtInCons(Value *args) {
+  int inputLength = length(args);
+  if (inputLength > 2) {
+    consTooManyArgumentsError(inputLength);
+  } else if (inputLength == 0) {
+    consNoArgumentsError();
+  }
+  Value *firstArgument = car(args);
+  Value *secondArgument = car(cdr(args));
+  int secondArgType = secondArgument->type;
+  Value *newNode = makeNull();
+  if (secondArgType == NULL_TYPE){
+    printf("Evaluation Error\n");
+  } else if (secondArgType == CONS_TYPE){
+    newNode = cons(cons(firstArgument, car(secondArgument)), makeNull());
+  } else {
+    newNode = cons(cons(firstArgument, secondArgument), makeNull());
+  }
+  return newNode;
 }
 
 // Takes in the arguments for a + operation and performs the arithmatic, then returns the result
@@ -60,7 +118,7 @@ Value *builtInAdd(Value *args) {
   result->type = INT_TYPE;
   int integerSum = 0;
   double doubleSum = 0;
-  
+
   while(args->type != NULL_TYPE){
     if (car(args)->type == INT_TYPE){
       integerSum += car(args)->i;

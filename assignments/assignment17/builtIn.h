@@ -11,4 +11,6 @@ void bindPrimitiveFunction(char *name, Value *(*function)(struct Value *), Frame
 
 Value *builtInNull(Value *args);
 
+Value *builtInCons(Value *args);
+
 #endif
