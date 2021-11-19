@@ -15,6 +15,7 @@
 #include "interpreter.h"
 #include "tokenizer.h"
 
+// Helper function with Null? to check both the car and cdr
 bool checkInside(Value *args) {
   if (isNull(args)){
     return true;
@@ -25,6 +26,7 @@ bool checkInside(Value *args) {
   }
 }
 
+// Takes in the arguments for a Null? operation and performs it, then returns the result
 Value *builtInNull(Value *args) {
   int numberOfArgs = length(args);
   if (isNull(args)){
@@ -46,6 +48,7 @@ Value *builtInNull(Value *args) {
   }
 }
 
+// Helper function to check for a dotted pair
 bool isDottedPair(Value *input){
   if ((car(input)->type != CONS_TYPE) && (!isNull(car(input)))){
     if ((cdr(input)->type != CONS_TYPE) && (!isNull(cdr(input)))){
@@ -55,6 +58,7 @@ bool isDottedPair(Value *input){
   return false;
 }
 
+// Takes in the arguments for a car operation and performs it, then returns the result
 Value *builtInCar(Value *args) {
   Value *input = car(args);
   int inputLength = length(args);
@@ -73,6 +77,7 @@ Value *builtInCar(Value *args) {
   }
 }
 
+// Takes in the arguments for a cdr operation and performs it, then returns the result
 Value *builtInCdr(Value *args) {
   Value *input = car(args);
   int inputLength = length(input);
@@ -91,6 +96,7 @@ Value *builtInCdr(Value *args) {
   }
 }
 
+// Takes in the arguments for a cons operation and performs it, then returns the result
 Value *builtInCons(Value *args) {
   int inputLength = length(args);
   if (inputLength > 2) {
