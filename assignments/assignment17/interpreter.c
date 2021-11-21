@@ -168,6 +168,9 @@ void printResult(Value *result){
   while (!isNull(result)){
     switch (result->type){
       case CONS_TYPE:
+        if (isNull(car(result))){
+          printf("()\n");
+        }
         printLL(&result, false, false);
         break;
       default:

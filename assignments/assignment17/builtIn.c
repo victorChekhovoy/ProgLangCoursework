@@ -106,12 +106,17 @@ Value *builtInCons(Value *args) {
   }
   Value *firstArgument = car(args);
   Value *secondArgument = car(cdr(args));
+  int firstArgType = firstArgument->type;
   int secondArgType = secondArgument->type;
   Value *newNode = makeNull();
   if (secondArgType == NULL_TYPE){
     printf("Evaluation Error\n");
   } else if (secondArgType == CONS_TYPE){
-    newNode = cons(cons(firstArgument, car(secondArgument)), makeNull());
+    if (firstArgType == CONS_TYPE){
+      newNode = cons(cons(firstArgument, car(secondArgument)), makeNull());
+    } else {
+      newNode = cons(cons(firstArgument, car(secondArgument)), makeNull());
+    }
   } else {
     newNode = cons(cons(firstArgument, secondArgument), makeNull());
   }
