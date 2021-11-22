@@ -189,3 +189,18 @@ void consTooFewArgumentsError(){
   printf("Evaluation Error: too few arguments (1) passed to cons, 2 expected\n");
   texit(0);
 }
+
+void setNoArgumentsError(){
+  printf("Evaluation Error: no arguments passed to set!, 2 required\n");
+  texit(0);
+}
+
+void setTooFewArgumentsError(){
+  printf("Evaluation Error: too few arguments (1) passed to set!, 2 expected\n");
+  texit(0);
+}
+
+void setTooManyArgumentsError(int inputLength){
+  printf("Evaluation Error: too many arguments (%i) passed to set!, 2 expected\n", inputLength);
+  texit(0);
+}

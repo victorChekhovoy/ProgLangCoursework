@@ -59,4 +59,10 @@ void carInvalidArgumentTypeError();
 
 void cdrInvalidArgumentTypeError();
 
+void setNoArgumentsError();
+
+void setTooFewArgumentsError();
+
+void setTooManyArgumentsError(int inputLength);
+
 #endif

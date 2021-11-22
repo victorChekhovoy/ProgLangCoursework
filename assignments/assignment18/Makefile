@@ -9,7 +9,7 @@ ifeq ($(USE_BINARIES),yes)
 else
   SRCS = linkedlist.c talloc.c main.c tokenizer.c parser.c interpreter.c \
 					evalLet.c lookUpSymbol.c evalIf.c errorCall.c evalEach.c apply.c \
-					builtIn.c
+					builtIn.c specialForms.c evalLetStar.c
   HDRS = tokenizer.h linkedlist.h talloc.h parser.h value.h interpreter.h
 endif
 

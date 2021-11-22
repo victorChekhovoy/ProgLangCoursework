@@ -1,5 +1,5 @@
 #ifndef _BUILNIT
-#define _INTERPRETER
+#define _BUILNIT
 
 Value *builtInAdd(Value *args);
 

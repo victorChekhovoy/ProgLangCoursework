@@ -13,7 +13,8 @@
 #include "apply.h"
 #include "evalEach.h"
 #include "builtIn.h"
-
+#include "specialForms.h"
+#include "evalLetStar.h"
 
 // A utility function that creates a blank frame
 Frame *makeFrame(){
@@ -28,48 +29,6 @@ Value *makeVoid(){
   Value *newValue = talloc(sizeof(Value));
   newValue->type = VOID_TYPE;
   return newValue;
-}
-
-// Checks if an expression has the same argument for the car and cdr
-void checkDuplicateArgs(Value *args){
-  if (containsSymbol(cdr(args), car(args))){
-    lambdaDuplicateArgumentError(car(args));
-  }
-  if (!isNull(args)){
-    return checkDuplicateArgs(cdr(args));
-  }
-}
-
-// Creates a new closure from the given args, code, and frame
-Value *makeClosure(Value *args, Value* code, Frame *frame){
-  Value *newClosure = talloc(sizeof(Value));
-  checkDuplicateArgs(args);
-  newClosure->type = CLOSURE_TYPE;
-  newClosure->cl.paramNames = args;
-  newClosure->cl.functionCode = code;
-  newClosure->cl.frame = frame;
-  return newClosure;
-}
-
-// Checks if each element in a list is a symbol
-bool checkSymbolEach(Value *list){
-  if (isNull(list)){
-    return true;
-  } else if (car(list)->type != SYMBOL_TYPE){
-    return false;
-  }
-  return checkSymbolEach(cdr(list));
-}
-
-// Creates a new variable and makes it the binding for the frame then returns the frame
-Frame *defineVariable(Value *symbol, Value *variableValue, Frame *frame){
-  if ((isNull(symbol)) || (isNull(variableValue))){
-    defineArgumentError();
-  }
-  Value *newVariable = cons(symbol, variableValue);
-  Value *bindingContainer = cons(newVariable, frame->bindings);
-  frame->bindings = bindingContainer;
-  return frame;
 }
 
 //Prints a single element in a tree
@@ -197,43 +156,29 @@ Value *eval(Value *tree, Frame *frame) {
       Value *first = car(tree);
       Value *args = cdr(tree);
       Value *result = talloc(sizeof(Value));
-
-      if (!strcmp(first->s, "if")) {
+      char *specialSymbol = first->s;
+      if (!strcmp(specialSymbol, "if")) {
         return evalIf(args, frame);
-      } else if (!strcmp(first->s, "let")){
+      } else if (!strcmp(specialSymbol, "let*")){
+        return evalLetStar(args, frame);
+      } else if (!strcmp(specialSymbol, "letrec")){
+        printf("nah\n");
+        return makeNull();
+      } else if (!strcmp(specialSymbol, "let")){
         return evalLet(args, frame);
-      } else if (!strcmp(first->s, "quote")){
-        if (length(args) > 1){
-          quoteArgumentNumberError(length(args));
-        }
-        return car(args);
-      } else if (!strcmp(first->s, "define")){
-        if (length(args) != 2){
-          defineArgumentNumberError(length(args));
-        }
-        Value *variable = car(args);
-        Value *value = eval(car(cdr(args)), frame);
-        if (variable->type != SYMBOL_TYPE){
-          bindingWrongTypeError();
-        }
-        frame = defineVariable(variable, value, frame);
+      } else if (!strcmp(specialSymbol, "quote")){
+        return processQuote(args);
+      } else if (!strcmp(specialSymbol, "define")){
+        frame = processDefine(args, frame);
         return makeVoid();      //define returns VOID_TYPE instead of NULL_TYPE because NULL_TYPE is sometimes returned by actual functions
-      } else if (!strcmp(first->s, "lambda")){
-        if (!checkSymbolEach(car(args))){
-          lambdaNonSymbolArguments();
-        }
-        if (isNull(car(cdr(args)))){
-          lambdaNoCode();
-        }
-        if (length(args) > 3){
-          lambdaArgumentNumberError(length(args));
-        }
-        return makeClosure(car(args), car(cdr(args)), frame);
+      } else if (!strcmp(specialSymbol, "lambda")){
+        return processLambda(args, frame);
+      } else if (!strcmp(specialSymbol, "set!")){
+        frame = processSet(args, frame);
+        return makeVoid();
       }
       else {
-        Value *evaluatedOperator = eval(first, frame);
-        Value *evaluatedArgs = evalEach(args, frame);
-        return apply(evaluatedOperator, evaluatedArgs);
+        return applyFunction(first, args, frame);
       }
     }
    default: {
