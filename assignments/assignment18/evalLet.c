@@ -9,7 +9,7 @@
 #include "interpreter.h"
 #include "errorCall.h"
 
-// This function takes a binding like that in let and prints it for debug purposes
+// Takes a binding like that in let and prints it for debug purposes
 void displayBinding(Value *binding){
   printf("Symbol: %s, Value: ", car(car(binding))->s);
   Value *variableValue = cdr(car(binding));
@@ -37,7 +37,7 @@ void displayBinding(Value *binding){
   }
 }
 
-// This function takes a frame as input and prints the variables in it for debug purposes
+// Takes a frame as input and prints the variables in it for debug purposes
 void displayFrame(Frame *frame){
   Value *currentBinding = frame->bindings;
   while (!isNull(currentBinding)){
@@ -46,7 +46,7 @@ void displayFrame(Frame *frame){
   }
 }
 
-// This function takes a binding as input, and checks if any of the elements in it are NULL
+// Takes a binding as input, and checks if any of the elements in it are NULL
 void checkNullBinding(Value *letBinding){
   if ((isNull(letBinding)) || (isNull(car(letBinding))) || (isNull(car(cdr(letBinding))))){
     bindingError();

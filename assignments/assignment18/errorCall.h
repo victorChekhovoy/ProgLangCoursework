@@ -37,7 +37,7 @@ void lambdaDuplicateArgumentError(Value *symbol);
 
 void nullNoArgumentsError();
 
-void nullTooManyArgumentsError(int argCount);
+void nullTooManyArgumentsError();
 
 void builtInAddArgumentTypeError();
 
@@ -50,6 +50,8 @@ void cdrTooManyArgumentsError(int inputLength);
 void cdrNoArgumentsError();
 
 void consTooManyArgumentsError(int inputLength);
+
+void consTooFewArgumentsError();
 
 void consNoArgumentsError();
 

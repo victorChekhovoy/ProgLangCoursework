@@ -16,7 +16,7 @@
 //Evaluates each expression in a linked list
 Value *evalEach(Value *argsList, Frame *frame){
   if(isNull(argsList)){
-    return argsList;
+    return makeNull();
   }
   return cons(eval(car(argsList), frame), evalEach(cdr(argsList), frame));
 }

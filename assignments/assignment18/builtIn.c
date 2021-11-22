@@ -28,12 +28,11 @@ bool checkInside(Value *args) {
 
 // Takes in the arguments for a Null? operation and performs it, then returns the result
 Value *builtInNull(Value *args) {
-  int numberOfArgs = length(args);
   if (isNull(args)){
     nullNoArgumentsError();
     return NULL;
-  } else if (numberOfArgs > 1){
-    nullTooManyArgumentsError(numberOfArgs);
+  } else if (!isNull(cdr(args))){
+    nullTooManyArgumentsError();
     return NULL;
   } else if (args->type == CONS_TYPE){
     Value *isItNull = talloc(sizeof(Value));
@@ -48,16 +47,6 @@ Value *builtInNull(Value *args) {
   }
 }
 
-// Helper function to check for a dotted pair
-bool isDottedPair(Value *input){
-  if ((car(input)->type != CONS_TYPE) && (!isNull(car(input)))){
-    if ((cdr(input)->type != CONS_TYPE) && (!isNull(cdr(input)))){
-      return true;
-    }
-  }
-  return false;
-}
-
 // Takes in the arguments for a car operation and performs it, then returns the result
 Value *builtInCar(Value *args) {
   Value *input = car(args);
@@ -70,29 +59,25 @@ Value *builtInCar(Value *args) {
   if (input->type != CONS_TYPE){
     carInvalidArgumentTypeError();
     return NULL;
-  } else if (isDottedPair(input)) {
-    return car(input);
   } else {
-    return car(car(input));
+    return car(input);
   }
 }
 
 // Takes in the arguments for a cdr operation and performs it, then returns the result
 Value *builtInCdr(Value *args) {
-  Value *input = car(args);
-  int inputLength = length(input);
+  //Value *input = car(args);
+  int inputLength = length(args);
   if (inputLength > 1) {
     cdrTooManyArgumentsError(inputLength);
   } else if (inputLength == 0) {
     cdrNoArgumentsError();
   }
-  if (input->type != CONS_TYPE){
+  if (args->type != CONS_TYPE){
     cdrInvalidArgumentTypeError();
     return NULL;
-  } else if (isDottedPair(input)) {
-    return cdr(input);
   } else {
-    return cons(cdr(car(input)), makeNull());
+    return cdr(car(args));
   }
 }
 
@@ -103,27 +88,19 @@ Value *builtInCons(Value *args) {
     consTooManyArgumentsError(inputLength);
   } else if (inputLength == 0) {
     consNoArgumentsError();
+  } else if (inputLength == 1){
+    consTooFewArgumentsError();
   }
   Value *firstArgument = car(args);
   Value *secondArgument = car(cdr(args));
   int firstArgType = firstArgument->type;
   int secondArgType = secondArgument->type;
   Value *newNode = makeNull();
-  if (secondArgType == NULL_TYPE){
-    printf("Evaluation Error\n");
-  } else if (secondArgType == CONS_TYPE){
-    if (firstArgType == CONS_TYPE){
-      newNode = cons(cons(firstArgument, car(secondArgument)), makeNull());
-    } else {
-      newNode = cons(cons(firstArgument, car(secondArgument)), makeNull());
-    }
-  } else {
-    newNode = cons(cons(firstArgument, secondArgument), makeNull());
-  }
+  newNode = cons(firstArgument, secondArgument);
   return newNode;
 }
 
-// Takes in the arguments for a + operation and performs the arithmatic, then returns the result
+// Takes in the arguments for a + operation and performs the arithmetic, then returns the result
 Value *builtInAdd(Value *args) {
   Value *result = talloc(sizeof(Value));
   result->type = INT_TYPE;
@@ -150,6 +127,7 @@ Value *builtInAdd(Value *args) {
   return result;
 }
 
+// Creates a PRIMITIVE_TYPE Value with the given name, code, and frame
 void bindPrimitiveFunction(char *name, Value *(*function)(struct Value *), Frame *frame) {
     Value *value = talloc(sizeof(Value));
     value->type = PRIMITIVE_TYPE;

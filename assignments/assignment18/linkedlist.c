@@ -161,7 +161,7 @@ Value *reverse(Value *list){
 // Use assertions to make sure that this is a legitimate operation.
 int length(Value *value){
   assert(value != NULL);
-  if (isNull(car(value))){
+  if (isNull(value)){
     return 0;
   }
   int output_length = 1 + length(cdr(value));
