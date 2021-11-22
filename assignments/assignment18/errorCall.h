@@ -75,4 +75,6 @@ void condElseNotLast();
 
 void condReturnNotBool();
 
+void builtInMultipyArgumentTypeError();
+
 #endif

@@ -132,7 +132,7 @@ void nullTooManyArgumentsError(){
 
 // Throws an error if + does not have numbers as arguments
 void builtInAddArgumentTypeError(){
-  printf("Evaluation Error: + must take numbers.\n");
+  printf("Evaluation Error: wrong type passed to +, expecting integer or double\n");
   texit(0);
 }
 
@@ -206,24 +206,28 @@ void setTooManyArgumentsError(int inputLength){
 }
 
 void andNoArgs(){
-  printf("Evaluation error: no arguments passed to and\n");
+  printf("Evaluation Error: no arguments passed to and\n");
   texit(0);
 }
 
 void orNoArgs(){
-  printf("Evaluation error: no arguments passed to or\n");
+  printf("Evaluation Error: no arguments passed to or\n");
   texit(0);
 }
 
 void condNoArgs(){
-  printf("Evaluation error: no arguments passed to cond\n");
+  printf("Evaluation Error: no arguments passed to cond\n");
   texit(0);
 }
 
 void condElseNotLast(){
-  printf("Evaluation error: else expeceted as last case in cond\n");
+  printf("Evaluation Error: else expeceted as last case in cond\n");
 }
 
 void condReturnNotBool(){
-  printf("Evaluation error: boolean expected as return in cond\n");
+  printf("Evaluation Error: boolean expected as return in cond\n");
+}
+
+void builtInMultipyArgumentTypeError(){
+  printf("Evaluation Error: wrong type passed to *, expecting integer or double\n");
 }

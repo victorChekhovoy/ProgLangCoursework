@@ -13,4 +13,8 @@ Value *builtInNull(Value *args);
 
 Value *builtInCons(Value *args);
 
+Value *builtInMinus(Value *args);
+
+Value *builtInMultiply(Value *args);
+
 #endif

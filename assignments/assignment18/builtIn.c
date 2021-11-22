@@ -119,11 +119,64 @@ Value *builtInAdd(Value *args) {
     }
     args = cdr(args);
   }
-  if(result->type == DOUBLE_TYPE){
+  if (result->type == DOUBLE_TYPE){
     result->d = doubleSum;
-  }else if (result->type == INT_TYPE){
+  } else if (result->type == INT_TYPE){
     result->i = integerSum;
   }
+  return result;
+}
+
+Value *builtInMinus(Value *args) {
+  Value *result = talloc(sizeof(Value));
+  result->type = INT_TYPE;
+  int integerSum;
+  double doubleSum;
+
+  if (car(args)->type == INT_TYPE){
+    integerSum = car(args)->i;
+    doubleSum = 0;
+  } else if(car(args)->type == DOUBLE_TYPE){
+    integerSum = 0;
+    doubleSum = car(args)->d;
+  }
+
+  args = cdr(args);
+  
+  while(args->type != NULL_TYPE){
+    if (car(args)->type == INT_TYPE){
+      integerSum -= car(args)->i;
+      result->i = integerSum;
+    } else if (car(args)->type == DOUBLE_TYPE){
+      doubleSum = doubleSum - (double)integerSum - car(args)->d;
+      integerSum = 0;
+      result->type = DOUBLE_TYPE;
+      result->d = doubleSum;
+    } else {
+      builtInAddArgumentTypeError();
+    }
+    args = cdr(args);
+  }
+  return result;
+}
+
+Value *builtInMultipy(Value *args){
+  Value *result = talloc(sizeof(Value));
+  result->type = INT_TYPE;
+  int product;
+
+  while (args->type != NULL_TYPE) {
+    if (car(args)->type == INT_TYPE) {
+      result *= car(args)->i;
+    } else if (car(args)->type == DOUBLE_TYPE){
+      result->type = DOUBLE_TYPE;
+      result *= car(args)->d;
+    } else {
+      builtInMultipyArgumentTypeError();
+    }
+    args = cdr(args);
+  }
+
   return result;
 }
 

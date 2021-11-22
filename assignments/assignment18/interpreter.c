@@ -204,6 +204,8 @@ void interpret(Value *tree){
   bindPrimitiveFunction("+", &builtInAdd, globalFrame);
   bindPrimitiveFunction("null?", &builtInNull, globalFrame);
   bindPrimitiveFunction("cons", &builtInCons, globalFrame);
+  bindPrimitiveFunction("-", &builtInMinus, globalFrame);
+  bindPrimitiveFunction("*", &builtInMultiply, globalFrame);
   while (!isNull(currentS)){
     Value *result = eval(currentS, globalFrame);
     tree = cdr(tree);
