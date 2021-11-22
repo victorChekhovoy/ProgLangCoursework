@@ -15,6 +15,7 @@
 #include "builtIn.h"
 #include "specialForms.h"
 #include "evalLetStar.h"
+#include "evalLetRec.h"
 
 // A utility function that creates a blank frame
 Frame *makeFrame(){
@@ -22,6 +23,20 @@ Frame *makeFrame(){
   newFrame->parent = NULL;
   newFrame->bindings = makeNull();
   return newFrame;
+}
+
+void bindPrimitives(Frame *frame){
+  bindPrimitiveFunction("car", &builtInCar, frame);
+  bindPrimitiveFunction("cdr", &builtInCdr, frame);
+  bindPrimitiveFunction("+", &builtInAdd, frame);
+  bindPrimitiveFunction("null?", &builtInNull, frame);
+  bindPrimitiveFunction("cons", &builtInCons, frame);
+  bindPrimitiveFunction("-", &builtInMinus, frame);
+  bindPrimitiveFunction("*", &builtInMultiply, frame);
+  bindPrimitiveFunction("*", &builtInMultiply, frame);
+  bindPrimitiveFunction("=", &builtInEquals, frame);
+  bindPrimitiveFunction("eq?", &builtInEquals, frame);
+
 }
 
 // A utility function that creates a Value of type VOID_TYPE
@@ -131,9 +146,6 @@ void printResult(Value *result){
   while (!isNull(result)){
     switch (result->type){
       case CONS_TYPE:
-        /*if (isNull(car(result))){
-          printf("()\n");
-        }*/
         printLL(&result, true, false);
         break;
       default:
@@ -162,8 +174,7 @@ Value *eval(Value *tree, Frame *frame) {
       } else if (!strcmp(specialSymbol, "let*")){
         return evalLetStar(args, frame);
       } else if (!strcmp(specialSymbol, "letrec")){
-        printf("nah\n");
-        return makeNull();
+        return evalLetRec(args, frame);
       } else if (!strcmp(specialSymbol, "let")){
         return evalLet(args, frame);
       } else if (!strcmp(specialSymbol, "quote")){
@@ -199,13 +210,7 @@ Value *eval(Value *tree, Frame *frame) {
 void interpret(Value *tree){
   Value *currentS = car(tree);
   Frame *globalFrame = makeFrame();
-  bindPrimitiveFunction("car", &builtInCar, globalFrame);
-  bindPrimitiveFunction("cdr", &builtInCdr, globalFrame);
-  bindPrimitiveFunction("+", &builtInAdd, globalFrame);
-  bindPrimitiveFunction("null?", &builtInNull, globalFrame);
-  bindPrimitiveFunction("cons", &builtInCons, globalFrame);
-  bindPrimitiveFunction("-", &builtInMinus, globalFrame);
-  bindPrimitiveFunction("*", &builtInMultiply, globalFrame);
+  bindPrimitives(globalFrame);
   while (!isNull(currentS)){
     Value *result = eval(currentS, globalFrame);
     tree = cdr(tree);

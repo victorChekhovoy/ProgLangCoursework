@@ -142,7 +142,7 @@ Value *builtInMinus(Value *args) {
   }
 
   args = cdr(args);
-  
+
   while(args->type != NULL_TYPE){
     if (car(args)->type == INT_TYPE){
       integerSum -= car(args)->i;
@@ -160,17 +160,17 @@ Value *builtInMinus(Value *args) {
   return result;
 }
 
-Value *builtInMultipy(Value *args){
+Value *builtInMultiply(Value *args){
   Value *result = talloc(sizeof(Value));
   result->type = INT_TYPE;
   int product;
 
   while (args->type != NULL_TYPE) {
     if (car(args)->type == INT_TYPE) {
-      result *= car(args)->i;
+      result->i *= car(args)->i;
     } else if (car(args)->type == DOUBLE_TYPE){
       result->type = DOUBLE_TYPE;
-      result *= car(args)->d;
+      result->d *= car(args)->d;
     } else {
       builtInMultipyArgumentTypeError();
     }
@@ -178,6 +178,102 @@ Value *builtInMultipy(Value *args){
   }
 
   return result;
+}
+
+Value *builtInEquals(Value *args){
+  Value *firstArgument = car(args);
+  Value *secondArgument = car(cdr(args));
+  Value *output = talloc(sizeof(Value));
+  output->type = BOOL_TYPE;
+  if (firstArgument->type != secondArgument->type){
+    output->i = 0;
+  } else {
+    switch(firstArgument->type){
+      case INT_TYPE: {
+        output->i = (firstArgument->i == secondArgument->i);
+        break;
+      }
+      case DOUBLE_TYPE: {
+        output->i = (firstArgument->d == secondArgument->d);
+        break;
+      }
+      case BOOL_TYPE: {
+        output->i = (firstArgument->i == secondArgument->i);
+        break;
+      }
+      case STR_TYPE: {
+        output->i = 1 - (strcmp(firstArgument->s, secondArgument->s));
+        break;
+      }
+      case SYMBOL_TYPE: {
+        output->i = 1 - (strcmp(firstArgument->s, secondArgument->s));
+        break;
+      }
+      default: {
+        output->i = 0;
+        break;
+      }
+    }
+  }
+  return output;
+}
+
+Value *builtInLess(Value *args){
+  Value *firstArgument = car(args);
+  Value *secondArgument = car(cdr(args));
+  Value *output = talloc(sizeof(Value));
+  output->type = BOOL_TYPE;
+  if ((firstArgument->type != INT_TYPE) && (firstArgument->type != DOUBLE_TYPE)){
+    lessWrongTypeError();
+  } else if ((secondArgument->type != INT_TYPE) && (secondArgument->type != DOUBLE_TYPE)){
+    lessWrongTypeError();
+  }
+
+  double firstArgumentConverted = 0;
+  if (firstArgument->type == INT_TYPE){
+    firstArgumentConverted = (double) firstArgument->i;
+  } else {
+    firstArgumentConverted = firstArgument->d;
+  }
+
+  double secondArgumentConverted = 0;
+  if (secondArgument->type == INT_TYPE){
+    secondArgumentConverted = (double) firstArgument->i;
+  } else {
+    secondArgumentConverted = firstArgument->d;
+  }
+
+  output->i = (firstArgumentConverted < secondArgumentConverted);
+  return output;
+}
+
+Value *builtInGreater(Value *args){
+  Value *firstArgument = car(args);
+  Value *secondArgument = car(cdr(args));
+  Value *output = talloc(sizeof(Value));
+  output->type = BOOL_TYPE;
+  if ((firstArgument->type != INT_TYPE) && (firstArgument->type != DOUBLE_TYPE)){
+    lessWrongTypeError();
+  } else if ((secondArgument->type != INT_TYPE) && (secondArgument->type != DOUBLE_TYPE)){
+    lessWrongTypeError();
+  }
+
+  double firstArgumentConverted = 0;
+  if (firstArgument->type == INT_TYPE){
+    firstArgumentConverted = (double) firstArgument->i;
+  } else {
+    firstArgumentConverted = firstArgument->d;
+  }
+
+  double secondArgumentConverted = 0;
+  if (secondArgument->type == INT_TYPE){
+    secondArgumentConverted = (double) firstArgument->i;
+  } else {
+    secondArgumentConverted = firstArgument->d;
+  }
+
+  output->i = (firstArgumentConverted > secondArgumentConverted);
+  return output;
 }
 
 // Creates a PRIMITIVE_TYPE Value with the given name, code, and frame

@@ -160,7 +160,7 @@ def buildCode() -> int:
     return return_code
 
 
-def runIt(test_dir, valgrind=True) -> None:
+def runIt(test_dir, valgrind=False) -> None:
 
     returncode = buildCode()
     print('return code is ', returncode)

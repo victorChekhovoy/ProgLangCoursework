@@ -77,4 +77,10 @@ void condReturnNotBool();
 
 void builtInMultipyArgumentTypeError();
 
+void letrecBindingOrderError(Value *symbol);
+
+void lessWrongTypeError();
+
+void greaterWrongTypeError(){
+
 #endif

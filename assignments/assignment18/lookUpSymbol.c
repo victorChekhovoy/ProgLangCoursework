@@ -17,6 +17,10 @@ Value *lookUpSymbol(Value *targetSymbol, Frame *frame){
   while(!isNull(bindings)){
     Value *currentSymbol = car(car(bindings));
     if (strcmp(currentSymbol->s, targetSymbol->s) == 0){
+      Value *foundSymbol = cdr(car(bindings));
+      if (foundSymbol->type == UNSPECIFIED_TYPE){
+        letrecBindingOrderError(currentSymbol);
+      }
       return cdr(car(bindings));
     }
     bindings = cdr(bindings);

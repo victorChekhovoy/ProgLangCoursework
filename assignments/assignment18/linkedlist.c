@@ -129,19 +129,18 @@ Value *reverseHelper(Value *list, Value *reversed_list){
       if ((current_type == INT_TYPE) || (current_type == BOOL_TYPE)){
         int new_car_value = current_car->i;
         new_car->i = new_car_value;
-      }
-      if (current_type == DOUBLE_TYPE){
+      } else if (current_type == DOUBLE_TYPE){
         double new_car_value = current_car->d;
         new_car->d = new_car_value;
-      }
-      if ((current_type == STR_TYPE) || (current_type == SYMBOL_TYPE) || (current_type == ERROR_TYPE)){
+      } else if ((current_type == STR_TYPE) || (current_type == SYMBOL_TYPE) || (current_type == ERROR_TYPE)){
         char *new_car_value = (char *) talloc(sizeof(char) * (strlen(current_car->s) + 1));
         strcpy(new_car_value, current_car->s);
         new_car->s = new_car_value;
-      }
-      if (current_type == CONS_TYPE){
+      } else if (current_type == CONS_TYPE){
         new_car->c.car = current_car->c.car;
         new_car->c.cdr = current_car->c.cdr;
+      } else if (current_type == PRIMITIVE_TYPE){
+        new_car->cl = current_car->cl;
       }
       reversed_list = cons(new_car, reversed_list);
       Value *remainder = cdr(list);
