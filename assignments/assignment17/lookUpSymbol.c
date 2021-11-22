@@ -8,6 +8,7 @@
 #include <assert.h>
 #include "parser.h"
 #include "lookUpSymbol.h"
+#include "errorCall.h"
 
 // Takes a frame and a symbol and goes through the bindings of the frame comparing to the target symbol
 // then checks the parent frame if there is one
@@ -21,7 +22,8 @@ Value *lookUpSymbol(Value *targetSymbol, Frame *frame){
     bindings = cdr(bindings);
   }
   if (frame->parent == NULL){
-    return makeNull();
+    symbolNotFoundError(targetSymbol);
+    return NULL;
   }
   else{
     return lookUpSymbol(targetSymbol, frame->parent);

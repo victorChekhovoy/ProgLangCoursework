@@ -23,6 +23,13 @@ Frame *makeFrame(){
   return newFrame;
 }
 
+// A utility function that creates a Value of type VOID_TYPE
+Value *makeVoid(){
+  Value *newValue = talloc(sizeof(Value));
+  newValue->type = VOID_TYPE;
+  return newValue;
+}
+
 // Checks if an expression has the same argument for the car and cdr
 void checkDuplicateArgs(Value *args){
   if (containsSymbol(cdr(args), car(args))){
@@ -64,7 +71,6 @@ Frame *defineVariable(Value *symbol, Value *variableValue, Frame *frame){
   frame->bindings = bindingContainer;
   return frame;
 }
-
 
 //Prints a single element in a tree
 void printE(Value *tree, bool printWhitespace){
@@ -138,11 +144,9 @@ void printLL(Value **tree, bool printParens, bool endWhitespace){
         printLL(&node, true, true);
       }
     } else if ((cdr(*tree)->type != CONS_TYPE) && (!isNull(cdr(*tree))) && (!isNull(node))) {
-      //printf("(");
       printE(node, true);
       printf(". ");
       printE(cdr(*tree), false);
-      //printf(")");
     }
     else{
       if (isNextNull){
@@ -163,15 +167,15 @@ void printLL(Value **tree, bool printParens, bool endWhitespace){
   }
 }
 
-//Prints the parse tree
+//Prints the result of a Scheme function
 void printResult(Value *result){
   while (!isNull(result)){
     switch (result->type){
       case CONS_TYPE:
-        if (isNull(car(result))){
+        /*if (isNull(car(result))){
           printf("()\n");
-        }
-        printLL(&result, false, false);
+        }*/
+        printLL(&result, true, false);
         break;
       default:
         printE(result, false);
@@ -181,14 +185,12 @@ void printResult(Value *result){
   }
   printf("\n");
 }
+
 // Evaluates a single S-expression given in tree
 Value *eval(Value *tree, Frame *frame) {
   switch (tree->type)  {
    case SYMBOL_TYPE: {
       Value *symbol = lookUpSymbol(tree, frame);
-      if (isNull(symbol)){
-        symbolNotFoundError(tree);
-      }
       return symbol;
    }
    case CONS_TYPE: {
@@ -204,7 +206,7 @@ Value *eval(Value *tree, Frame *frame) {
         if (length(args) > 1){
           quoteArgumentNumberError(length(args));
         }
-        return args;
+        return car(args);
       } else if (!strcmp(first->s, "define")){
         if (length(args) != 2){
           defineArgumentNumberError(length(args));
@@ -215,7 +217,7 @@ Value *eval(Value *tree, Frame *frame) {
           bindingWrongTypeError();
         }
         frame = defineVariable(variable, value, frame);
-        return makeNull();
+        return makeVoid();      //define returns VOID_TYPE instead of NULL_TYPE because NULL_TYPE is sometimes returned by actual functions
       } else if (!strcmp(first->s, "lambda")){
         if (!checkSymbolEach(car(args))){
           lambdaNonSymbolArguments();
@@ -253,7 +255,11 @@ void interpret(Value *tree){
     Value *result = eval(currentS, globalFrame);
     tree = cdr(tree);
     currentS = car(tree);
-    printResult(result);
+    if (isNull(result)){
+      printResult(cons(result, makeNull()));
+    } else{
+      printResult(result);
+    }
 
   }
 }

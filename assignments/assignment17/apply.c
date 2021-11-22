@@ -12,9 +12,9 @@
 #include "parser.h"
 #include "interpreter.h"
 
-//Binds a single argument in a function call to a parameter in the closure
+// Binds a single argument in a function call to a parameter in the closure
 Frame *bindVariable(Value *param, Value *value, Frame *frame){
-  if ((isNull(param)) || (isNull(value))){
+  if (isNull(param)){
     functionArgumentError();
   }
   Value *newVariable = cons(param, value);
@@ -23,10 +23,14 @@ Frame *bindVariable(Value *param, Value *value, Frame *frame){
   return frame;
 }
 
-//Binds each argument passed in a function call to a respective parameter in the closure
-//Throws an error if the number of arguments is incorrect
+// Binds each argument passed in a function call to a respective parameter in the closure
+// Throws an error if the number of arguments is incorrect
 Frame *bindEach(Value *paramNames, Value *paramValues, Frame *frame){
-  if (length(paramNames) != length(paramValues)){
+  int numberPassedValues = length(paramValues);
+  if ((paramValues->type == CONS_TYPE) && (isNull(car(paramValues))) && (isNull(cdr(paramValues)))){
+    numberPassedValues = 1;
+  }
+  if (length(paramNames) != numberPassedValues){
     functionArgumentNumberError(length(paramNames), length(paramValues));
   }
   if (isNull(paramNames)){
@@ -36,11 +40,12 @@ Frame *bindEach(Value *paramNames, Value *paramValues, Frame *frame){
   return bindEach(cdr(paramNames), cdr(paramValues), frame);
 }
 
+// Evalues the result of a built-in function
 Value *applyBuiltIn(Value *function, Value *args){
   return (*(function->pf))(args);
 }
 
-//Given a closure and a list of arguments, evaluates the function given by the closure
+// Given a closure and a list of arguments, evaluates the function given by the closure
 Value *apply(Value *closure, Value *args){
   if (closure->type == PRIMITIVE_TYPE){
     return applyBuiltIn(closure, args);
