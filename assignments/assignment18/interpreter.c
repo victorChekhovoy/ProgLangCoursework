@@ -176,6 +176,14 @@ Value *eval(Value *tree, Frame *frame) {
       } else if (!strcmp(specialSymbol, "set!")){
         frame = processSet(args, frame);
         return makeVoid();
+      } else if (!strcmp(specialSymbol, "begin")){
+        return processBegin(args, frame);
+      } else if (!strcmp(specialSymbol, "and")){
+        return processAnd(args, frame);
+      } else if (!strcmp(specialSymbol, "or")){
+        return processOr(args, frame);
+      } else if(!strcmp(specialSymbol, "cond")){
+        return processCond(args, frame);
       }
       else {
         return applyFunction(first, args, frame);

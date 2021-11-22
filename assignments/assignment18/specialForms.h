@@ -11,4 +11,12 @@ Value *applyFunction(Value *function, Value *args, Frame *frame);
 
 Frame *processSet(Value *args, Frame *frame);
 
+Value *processBegin(Value *args, Frame *frame);
+
+Value *processAnd(Value *args, Frame *frame);
+
+Value *processOr(Value *args, Frame *frame);
+
+Value *processCond(Value *args, Frame *frame);
+
 #endif

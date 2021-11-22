@@ -113,3 +113,87 @@ Frame *processSet(Value *args, Frame *frame){
   Value *replace = car(cdr(args));
   return replaceSymbol(lookUp, replace, frame);
 }
+
+// Return the result of calling begin
+Value *processBegin(Value *args, Frame *frame){
+  Value *result;
+  if(args->type == NULL_TYPE){
+    result = makeNull();
+    result->type = VOID_TYPE;
+    return result;
+  }
+  while(cdr(args)->type != NULL_TYPE){
+    eval(car(args), frame);
+    args = cdr(args);
+  }
+  return eval(car(args), frame);
+}
+
+// Return the result of calling and
+Value *processAnd(Value *args, Frame *frame){
+  Value *result;
+  Value *firstTerm;
+  result = talloc(sizeof(Value));
+  result->type = BOOL_TYPE;
+  if(args->type == NULL_TYPE){
+    andNoArgs();
+  }
+  while(args->type != NULL_TYPE){
+    firstTerm = eval(car(args), frame);
+    if(firstTerm->i == 0){
+      result->i = 0;
+      return result;
+    }
+    args = cdr(args);
+  }
+  result->i = 1;
+  return result;
+}
+
+// Return the result of call or
+Value *processOr(Value *args, Frame *frame){
+  Value *result;
+  Value *firstTerm;
+  result = talloc(sizeof(Value));
+  result->type = BOOL_TYPE;
+  result->i = 0;
+  if(args->type == NULL_TYPE){
+    orNoArgs();
+  }
+  while(args->type != NULL_TYPE){
+    firstTerm = eval(car(args), frame);
+    if(firstTerm->i == 1){
+      result->i = 1;
+      return result;
+    }
+    args = cdr(args);
+  }
+  return result;
+}
+
+Value *processCond(Value *args, Frame *frame){
+    Value *conditionStatement;
+    Value *voidValue;
+    if (length(args) == 0) {
+      condNoArgs();
+    }
+    while (args->type != NULL_TYPE) {
+      conditionStatement = car(car(args));
+      if (conditionStatement->type == SYMBOL_TYPE && !strcmp(conditionStatement->s, "else")) {
+        if (cdr(args)->type != NULL_TYPE) {
+          condElseNotLast();
+        } 
+        return eval(car(cdr(car(args))), frame);
+      }
+      conditionStatement = eval(conditionStatement, frame);
+      if (conditionStatement->type != BOOL_TYPE) {
+        condReturnNotBool();
+      } else if (conditionStatement->i) {
+        return eval(car(cdr(car(args))), frame);
+      }
+      args = cdr(args);
+    }
+    voidValue = makeNull();
+    voidValue->type = VOID_TYPE;
+    return voidValue;
+}

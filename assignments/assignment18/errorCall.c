@@ -204,3 +204,26 @@ void setTooManyArgumentsError(int inputLength){
   printf("Evaluation Error: too many arguments (%i) passed to set!, 2 expected\n", inputLength);
   texit(0);
 }
+
+void andNoArgs(){
+  printf("Evaluation error: no arguments passed to and\n");
+  texit(0);
+}
+
+void orNoArgs(){
+  printf("Evaluation error: no arguments passed to or\n");
+  texit(0);
+}
+
+void condNoArgs(){
+  printf("Evaluation error: no arguments passed to cond\n");
+  texit(0);
+}
+
+void condElseNotLast(){
+  printf("Evaluation error: else expeceted as last case in cond\n");
+}
+
+void condReturnNotBool(){
+  printf("Evaluation error: boolean expected as return in cond\n");
+}

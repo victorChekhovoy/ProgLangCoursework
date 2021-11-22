@@ -65,4 +65,14 @@ void setTooFewArgumentsError();
 
 void setTooManyArgumentsError(int inputLength);
 
+void andNoArgs();
+
+void orNoArgs();
+
+void condNoArgs();
+
+void condElseNotLast();
+
+void condReturnNotBool();
+
 #endif
