@@ -81,6 +81,6 @@ void letrecBindingOrderError(Value *symbol);
 
 void lessWrongTypeError();
 
-void greaterWrongTypeError(){
+void greaterWrongTypeError();
 
 #endif

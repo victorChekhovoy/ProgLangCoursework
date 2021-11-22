@@ -238,11 +238,10 @@ Value *builtInLess(Value *args){
 
   double secondArgumentConverted = 0;
   if (secondArgument->type == INT_TYPE){
-    secondArgumentConverted = (double) firstArgument->i;
+    secondArgumentConverted = (double) secondArgument->i;
   } else {
-    secondArgumentConverted = firstArgument->d;
+    secondArgumentConverted = secondArgument->d;
   }
-
   output->i = (firstArgumentConverted < secondArgumentConverted);
   return output;
 }
@@ -267,9 +266,9 @@ Value *builtInGreater(Value *args){
 
   double secondArgumentConverted = 0;
   if (secondArgument->type == INT_TYPE){
-    secondArgumentConverted = (double) firstArgument->i;
+    secondArgumentConverted = (double) secondArgument->i;
   } else {
-    secondArgumentConverted = firstArgument->d;
+    secondArgumentConverted = secondArgument->d;
   }
 
   output->i = (firstArgumentConverted > secondArgumentConverted);
