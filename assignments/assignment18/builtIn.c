@@ -91,12 +91,12 @@ Value *builtInCons(Value *args) {
   } else if (inputLength == 1){
     consTooFewArgumentsError();
   }
-  Value *firstArgument = car(args);
+  Value *firstArg = car(args);
   Value *secondArgument = car(cdr(args));
-  int firstArgType = firstArgument->type;
+  int firstArgType = firstArg->type;
   int secondArgType = secondArgument->type;
   Value *newNode = makeNull();
-  newNode = cons(firstArgument, secondArgument);
+  newNode = cons(firstArg, secondArgument);
   return newNode;
 }
 
@@ -127,6 +127,7 @@ Value *builtInAdd(Value *args) {
   return output;
 }
 
+// Takes in the arguments for a - operation and performs the arithmetic, then returns the result
 Value *builtInMinus(Value *args) {
   int inputLength = length(args);
   if (inputLength > 2){
@@ -137,34 +138,31 @@ Value *builtInMinus(Value *args) {
     primitiveTooFewArgsError("-");
   }
 
+  Value *firstArg = car(args);
+  Value *secondArg = car(cdr(args));
   Value *output = talloc(sizeof(Value));
-  output->type = INT_TYPE;
-  int integerSum;
-  double doubleSum;
 
-  if (car(args)->type == INT_TYPE){
-    integerSum = car(args)->i;
-    doubleSum = 0;
-  } else if(car(args)->type == DOUBLE_TYPE){
-    integerSum = 0;
-    doubleSum = car(args)->d;
+  double firstArgConverted = 0;
+  if (firstArg->type == INT_TYPE){
+    firstArgConverted = (double) firstArg->i;
+  } else {
+    firstArgConverted = firstArg->d;
   }
 
-  args = cdr(args);
+  double secondArgumentConverted = 0;
+  if (secondArg->type == INT_TYPE){
+    secondArgumentConverted = (double) secondArg->i;
+  } else {
+    secondArgumentConverted = secondArg->d;
+  }
 
-  while(args->type != NULL_TYPE){
-    if (car(args)->type == INT_TYPE){
-      integerSum -= car(args)->i;
-      output->i = integerSum;
-    } else if (car(args)->type == DOUBLE_TYPE){
-      doubleSum = doubleSum - (double)integerSum - car(args)->d;
-      integerSum = 0;
-      output->type = DOUBLE_TYPE;
-      output->d = doubleSum;
-    } else {
-      builtInAddArgumentTypeError();
-    }
-    args = cdr(args);
+  double doubleResult = firstArgConverted - secondArgumentConverted;
+  if ((firstArg->type == INT_TYPE) && (secondArg->type == INT_TYPE)){
+    output->type = INT_TYPE;
+    output->i = (int) doubleResult;
+  } else{
+    output->type = DOUBLE_TYPE;
+    output->d = doubleResult;
   }
   return output;
 }
@@ -204,11 +202,11 @@ Value *builtInDivide(Value *args){
   Value *firstArg = car(args);
   Value *secondArg = car(cdr(args));
 
-  double firstArgumentConverted = 0;
+  double firstArgConverted = 0;
   if (firstArg->type == INT_TYPE){
-    firstArgumentConverted = (double) firstArg->i;
+    firstArgConverted = (double) firstArg->i;
   } else {
-    firstArgumentConverted = firstArg->d;
+    firstArgConverted = firstArg->d;
   }
 
   double secondArgumentConverted = 0;
@@ -218,7 +216,7 @@ Value *builtInDivide(Value *args){
     secondArgumentConverted = secondArg->d;
   }
 
-  double result = firstArgumentConverted / secondArgumentConverted;
+  double result = firstArgConverted / secondArgumentConverted;
   Value *resultValue = talloc(sizeof(Value));
   if (result == ((double) (int) result)){
     resultValue->type = INT_TYPE;
@@ -239,32 +237,32 @@ Value *builtInEquals(Value *args){
   } else if (inputLength == 1){
     primitiveTooFewArgsError("=");
   }
-  Value *firstArgument = car(args);
+  Value *firstArg = car(args);
   Value *secondArgument = car(cdr(args));
   Value *output = talloc(sizeof(Value));
   output->type = BOOL_TYPE;
-  if (firstArgument->type != secondArgument->type){
+  if (firstArg->type != secondArgument->type){
     output->i = 0;
   } else {
-    switch(firstArgument->type){
+    switch(firstArg->type){
       case INT_TYPE: {
-        output->i = (firstArgument->i == secondArgument->i);
+        output->i = (firstArg->i == secondArgument->i);
         break;
       }
       case DOUBLE_TYPE: {
-        output->i = (firstArgument->d == secondArgument->d);
+        output->i = (firstArg->d == secondArgument->d);
         break;
       }
       case BOOL_TYPE: {
-        output->i = (firstArgument->i == secondArgument->i);
+        output->i = (firstArg->i == secondArgument->i);
         break;
       }
       case STR_TYPE: {
-        output->i = 1 - (strcmp(firstArgument->s, secondArgument->s));
+        output->i = 1 - (strcmp(firstArg->s, secondArgument->s));
         break;
       }
       case SYMBOL_TYPE: {
-        output->i = 1 - (strcmp(firstArgument->s, secondArgument->s));
+        output->i = 1 - (strcmp(firstArg->s, secondArgument->s));
         break;
       }
       default: {
@@ -285,21 +283,21 @@ Value *builtInLess(Value *args){
   } else if (inputLength == 1){
     primitiveTooFewArgsError("<");
   }
-  Value *firstArgument = car(args);
+  Value *firstArg = car(args);
   Value *secondArgument = car(cdr(args));
   Value *output = talloc(sizeof(Value));
   output->type = BOOL_TYPE;
-  if ((firstArgument->type != INT_TYPE) && (firstArgument->type != DOUBLE_TYPE)){
+  if ((firstArg->type != INT_TYPE) && (firstArg->type != DOUBLE_TYPE)){
     lessWrongTypeError();
   } else if ((secondArgument->type != INT_TYPE) && (secondArgument->type != DOUBLE_TYPE)){
     lessWrongTypeError();
   }
 
-  double firstArgumentConverted = 0;
-  if (firstArgument->type == INT_TYPE){
-    firstArgumentConverted = (double) firstArgument->i;
+  double firstArgConverted = 0;
+  if (firstArg->type == INT_TYPE){
+    firstArgConverted = (double) firstArg->i;
   } else {
-    firstArgumentConverted = firstArgument->d;
+    firstArgConverted = firstArg->d;
   }
 
   double secondArgumentConverted = 0;
@@ -308,7 +306,7 @@ Value *builtInLess(Value *args){
   } else {
     secondArgumentConverted = secondArgument->d;
   }
-  output->i = (firstArgumentConverted < secondArgumentConverted);
+  output->i = (firstArgConverted < secondArgumentConverted);
   return output;
 }
 
@@ -321,21 +319,21 @@ Value *builtInGreater(Value *args){
   } else if (inputLength == 1){
     primitiveTooFewArgsError(">");
   }
-  Value *firstArgument = car(args);
+  Value *firstArg = car(args);
   Value *secondArgument = car(cdr(args));
   Value *output = talloc(sizeof(Value));
   output->type = BOOL_TYPE;
-  if ((firstArgument->type != INT_TYPE) && (firstArgument->type != DOUBLE_TYPE)){
+  if ((firstArg->type != INT_TYPE) && (firstArg->type != DOUBLE_TYPE)){
     lessWrongTypeError();
   } else if ((secondArgument->type != INT_TYPE) && (secondArgument->type != DOUBLE_TYPE)){
     lessWrongTypeError();
   }
 
-  double firstArgumentConverted = 0;
-  if (firstArgument->type == INT_TYPE){
-    firstArgumentConverted = (double) firstArgument->i;
+  double firstArgConverted = 0;
+  if (firstArg->type == INT_TYPE){
+    firstArgConverted = (double) firstArg->i;
   } else {
-    firstArgumentConverted = firstArgument->d;
+    firstArgConverted = firstArg->d;
   }
 
   double secondArgumentConverted = 0;
@@ -345,7 +343,7 @@ Value *builtInGreater(Value *args){
     secondArgumentConverted = secondArgument->d;
   }
 
-  output->i = (firstArgumentConverted > secondArgumentConverted);
+  output->i = (firstArgConverted > secondArgumentConverted);
   return output;
 }
 
