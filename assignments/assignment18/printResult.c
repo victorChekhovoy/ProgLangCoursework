@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include "talloc.h"
 #include <string.h>
+#include <stdbool.h>
+#include "value.h"
+#include "linkedlist.h"
 
 
 //Prints a single element in a tree
