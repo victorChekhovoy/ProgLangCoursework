@@ -38,7 +38,7 @@ void bindPrimitives(Frame *frame){
   bindPrimitiveFunction("eq?", &builtInEquals, frame);
   bindPrimitiveFunction("<", &builtInLess, frame);
   bindPrimitiveFunction(">", &builtInGreater, frame);
-  bindPrimitiveFunction("modulo", &builtInGreater, frame);
+  bindPrimitiveFunction("modulo", &builtInModulo, frame);
 }
 
 // A utility function that creates a Value of type VOID_TYPE
