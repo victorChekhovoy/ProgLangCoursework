@@ -34,7 +34,7 @@ Value *lookUpSymbol(Value *targetSymbol, Frame *frame){
   }
 }
 
-// Finds a symbol in the frame and replaces its value with the given value
+// Finds a symbol in the frame or any of its ancestors and replaces its value with the given value
 Frame *replaceSymbol(Value *lookUp, Value *replace, Frame *frame){
   Value *bindings = frame->bindings;
   bool foundSymbol = false;

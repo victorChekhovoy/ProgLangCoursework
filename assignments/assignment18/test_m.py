@@ -6,4 +6,4 @@ if len(sys.argv) == 1:
 else:
   valgrind = False
 
-sys.exit(tester.runIt("test-files-m"))
+sys.exit(tester.runIt("test-files-m", valgrind))

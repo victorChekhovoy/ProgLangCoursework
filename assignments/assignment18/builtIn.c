@@ -167,6 +167,7 @@ Value *builtInMinus(Value *args) {
   return output;
 }
 
+// Takes in the arguments for a * operation and performs the arithmetic, then returns the result
 Value *builtInMultiply(Value *args){
   Value *result = talloc(sizeof(Value));
   result->type = INT_TYPE;
@@ -190,6 +191,7 @@ Value *builtInMultiply(Value *args){
   return result;
 }
 
+// Takes in the arguments for a / operation and performs the arithmetic, then returns the result
 Value *builtInDivide(Value *args){
   int inputLength = length(args);
   if (inputLength > 2){
@@ -228,6 +230,7 @@ Value *builtInDivide(Value *args){
   return resultValue;
 }
 
+// Takes in the arguments for a = or eq? operation and performs the comparison, then returns the result
 Value *builtInEquals(Value *args){
   int inputLength = length(args);
   if (inputLength > 2){
@@ -274,6 +277,7 @@ Value *builtInEquals(Value *args){
   return output;
 }
 
+// Takes in the arguments for a < operation and performs the comparison, then returns the result
 Value *builtInLess(Value *args){
   int inputLength = length(args);
   if (inputLength > 2){
@@ -310,6 +314,7 @@ Value *builtInLess(Value *args){
   return output;
 }
 
+// Takes in the arguments for a > operation and performs the comparison, then returns the result
 Value *builtInGreater(Value *args){
   int inputLength = length(args);
   if (inputLength > 2){
@@ -347,6 +352,7 @@ Value *builtInGreater(Value *args){
   return output;
 }
 
+// Takes in the arguments for a modulo operation and performs the arithmetic, then returns the result
 Value *builtInModulo(Value *args){
   Value *output = talloc(sizeof(Value));
   output->type = INT_TYPE;

@@ -27,6 +27,7 @@ Frame *makeFrame(){
   return newFrame;
 }
 
+// Creates proper bindings in the global frame for all primitive functions
 void bindPrimitives(Frame *frame){
   bindPrimitiveFunction("car", &builtInCar, frame);
   bindPrimitiveFunction("cdr", &builtInCdr, frame);
