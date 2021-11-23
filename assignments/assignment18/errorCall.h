@@ -83,4 +83,8 @@ void lessWrongTypeError();
 
 void greaterWrongTypeError();
 
+void builtInModuloWrongNumberOfArgs();
+
+void builtInModuloArgumentTypeError();
+
 #endif

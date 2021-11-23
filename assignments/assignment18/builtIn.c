@@ -102,8 +102,8 @@ Value *builtInCons(Value *args) {
 
 // Takes in the arguments for a + operation and performs the arithmetic, then returns the result
 Value *builtInAdd(Value *args) {
-  Value *result = talloc(sizeof(Value));
-  result->type = INT_TYPE;
+  Value *output = talloc(sizeof(Value));
+  output->type = INT_TYPE;
   int integerSum = 0;
   double doubleSum = 0;
 
@@ -113,23 +113,23 @@ Value *builtInAdd(Value *args) {
     } else if (car(args)->type == DOUBLE_TYPE){
       doubleSum = doubleSum + (double)integerSum + car(args)->d;
       integerSum = 0;
-      result->type = DOUBLE_TYPE;
+      output->type = DOUBLE_TYPE;
     } else {
       builtInAddArgumentTypeError();
     }
     args = cdr(args);
   }
-  if (result->type == DOUBLE_TYPE){
-    result->d = doubleSum;
-  } else if (result->type == INT_TYPE){
-    result->i = integerSum;
+  if (output->type == DOUBLE_TYPE){
+    output->d = doubleSum;
+  } else if (output->type == INT_TYPE){
+    output->i = integerSum;
   }
-  return result;
+  return output;
 }
 
 Value *builtInMinus(Value *args) {
-  Value *result = talloc(sizeof(Value));
-  result->type = INT_TYPE;
+  Value *output = talloc(sizeof(Value));
+  output->type = INT_TYPE;
   int integerSum;
   double doubleSum;
 
@@ -146,38 +146,38 @@ Value *builtInMinus(Value *args) {
   while(args->type != NULL_TYPE){
     if (car(args)->type == INT_TYPE){
       integerSum -= car(args)->i;
-      result->i = integerSum;
+      output->i = integerSum;
     } else if (car(args)->type == DOUBLE_TYPE){
       doubleSum = doubleSum - (double)integerSum - car(args)->d;
       integerSum = 0;
-      result->type = DOUBLE_TYPE;
-      result->d = doubleSum;
+      output->type = DOUBLE_TYPE;
+      output->d = doubleSum;
     } else {
       builtInAddArgumentTypeError();
     }
     args = cdr(args);
   }
-  return result;
+  return output;
 }
 
 Value *builtInMultiply(Value *args){
-  Value *result = talloc(sizeof(Value));
-  result->type = INT_TYPE;
+  Value *output = talloc(sizeof(Value));
+  output->type = INT_TYPE;
   int product;
 
   while (args->type != NULL_TYPE) {
     if (car(args)->type == INT_TYPE) {
-      result->i *= car(args)->i;
+      output->i *= car(args)->i;
     } else if (car(args)->type == DOUBLE_TYPE){
-      result->type = DOUBLE_TYPE;
-      result->d *= car(args)->d;
+      output->type = DOUBLE_TYPE;
+      output->d *= car(args)->d;
     } else {
       builtInMultipyArgumentTypeError();
     }
     args = cdr(args);
   }
 
-  return result;
+  return output;
 }
 
 Value *builtInEquals(Value *args){
@@ -273,6 +273,19 @@ Value *builtInGreater(Value *args){
 
   output->i = (firstArgumentConverted > secondArgumentConverted);
   return output;
+}
+
+Value *builtInModulo(Value *args){
+  Value *output = talloc(sizeof(Value));
+  output->type = INT_TYPE;
+
+  if (car(args)->type != INT_TYPE || car(cdr(args))->type != INT_TYPE){
+    builtInModuloArgumentTypeError();
+  } else if (length(args) != 2) {
+    builtInModuloWrongNumberOfArgs();
+  }
+  output->i = (car(args)->i) % (car(cdr(args))->i);
+	return output;
 }
 
 // Creates a PRIMITIVE_TYPE Value with the given name, code, and frame

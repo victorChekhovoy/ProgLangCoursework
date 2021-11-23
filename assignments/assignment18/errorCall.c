@@ -221,3 +221,11 @@ void greaterWrongTypeError(){
   printf("Evaluation Error: wrong type passed to >\n");
   texit(0);
 }
+
+void builtInModuloWrongNumberOfArgs(){
+  printf("Evaluation Error: wrong number of arguments passed to modulo. Expecting 2 arguments\n");
+}
+
+void builtInModuloArgumentTypeError(){
+  printf("Evaluation Error: wrong type of arguments passed to modulo. Expecting integers");
+}
