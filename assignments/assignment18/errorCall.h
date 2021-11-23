@@ -92,4 +92,7 @@ void primitiveTooFewArgsError(char *name);
 void builtInModuloWrongNumberOfArgs();
 
 void builtInModuloArgumentTypeError();
+
+void letrecUsedTooSoonError(Value *symbol);
+
 #endif

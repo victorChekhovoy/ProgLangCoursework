@@ -31,6 +31,9 @@ void displayBinding(Value *binding){
       case DOUBLE_TYPE:
         printf("%f\n", variableValue->d);
         break;
+      case UNSPECIFIED_TYPE:
+        printf("UNSPECIFIED\n");
+        break;
       default:
         printf("\n");
         break;

@@ -19,6 +19,13 @@ Frame *evalLetrecBindings(Value *letrecBindings, Frame *env1, Frame *env2){
   while (!isNull(car(letrecBindings))){
     currentBinding = car(letrecBindings);
     Value *newBinding = makeBinding(currentBinding, env1);
+    Value *variableValue = eval(car(cdr(currentBinding)), env2);
+    if (variableValue->type == SYMBOL_TYPE){
+      Value *errorCheck = lookUpSymbol(variableValue, env2);
+      if (errorCheck->type == UNSPECIFIED_TYPE){
+        letrecUsedTooSoonError(variableValue);
+      }
+    }
 
     if (containsSymbol(letBindingsDefined, car(newBinding))){
       duplicateArgumentError(car(newBinding));
@@ -58,10 +65,10 @@ Frame *makeEmptyLetrecBindings(Value *letrecBindings, Frame *frame){
 
     Value *bindingContainer;
     if (isNull(addedBindings)){
-      bindingContainer = cons(newBinding, frame->bindings);
+      bindingContainer = cons(cons(car(currentBinding), newBinding), frame->bindings);
     }
     else {
-      bindingContainer = cons(newBinding, addedBindings);
+      bindingContainer = cons(cons(car(currentBinding), newBinding), addedBindings);
     }
 
     addedBindings = bindingContainer;

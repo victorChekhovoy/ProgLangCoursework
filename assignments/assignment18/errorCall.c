@@ -222,7 +222,6 @@ void greaterWrongTypeError(){
   texit(0);
 }
 
-
 void primitiveTooManyArgsError(char *name, int inputLength){
   printf("Evaluation Error: too many arguments (%i) passed to %s, 2 expected\n", inputLength, name);
   texit(0);
@@ -239,8 +238,15 @@ void primitiveTooFewArgsError(char *name){
 }
 void builtInModuloWrongNumberOfArgs(){
   printf("Evaluation Error: wrong number of arguments passed to modulo. Expecting 2 arguments\n");
+  texit(0);
 }
 
 void builtInModuloArgumentTypeError(){
   printf("Evaluation Error: wrong type of arguments passed to modulo. Expecting integers");
+  texit(0);
+}
+
+void letrecUsedTooSoonError(Value *symbol){
+  printf("Evaluation error: letrec used a variable %s before all were computed.\n", symbol->s);
+  texit(0);
 }
