@@ -10,6 +10,7 @@
 #include "errorCall.h"
 
 
+// Updates the letrec bindings with actual values
 Frame *evalLetrecBindings(Value *letrecBindings, Frame *env1, Frame *env2){
   Value *currentBinding;
   Value *addedBindings = makeNull();
@@ -39,6 +40,7 @@ Frame *evalLetrecBindings(Value *letrecBindings, Frame *env1, Frame *env2){
   return env1;
 }
 
+// Creates the temporary bindings for letrec
 Frame *makeEmptyLetrecBindings(Value *letrecBindings, Frame *frame){
   Value *currentBinding;
   Value *addedBindings = makeNull();
@@ -49,10 +51,10 @@ Frame *makeEmptyLetrecBindings(Value *letrecBindings, Frame *frame){
     Value *newBinding = talloc(sizeof(Value));
     newBinding->type = UNSPECIFIED_TYPE;
 
-    if (containsSymbol(letBindingsDefined, car(newBinding))){
-      duplicateArgumentError(car(newBinding));
+    if (containsSymbol(letBindingsDefined, car(currentBinding))){
+      duplicateArgumentError(car(currentBinding));
     }
-    letBindingsDefined = cons(car(newBinding), letBindingsDefined);
+    letBindingsDefined = cons(cons(car(currentBinding), newBinding), letBindingsDefined);
 
     Value *bindingContainer;
     if (isNull(addedBindings)){
@@ -69,7 +71,7 @@ Frame *makeEmptyLetrecBindings(Value *letrecBindings, Frame *frame){
   return frame;
 }
 
-// Takes a let expression and a frame as input, and evaluates the expression
+// Takes a letrec expression and a frame as input, and evaluates the expression
 Value *evalLetRec(Value *args, Frame *frame){
   Value *bindings = car(args);
   Value *expression = cdr(args);

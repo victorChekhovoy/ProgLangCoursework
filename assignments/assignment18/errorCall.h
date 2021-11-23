@@ -83,4 +83,10 @@ void lessWrongTypeError();
 
 void greaterWrongTypeError();
 
+void primitiveTooManyArgsError(char *name, int inputLength);
+
+void primitiveNoArgsError(char *name);
+
+void primitiveTooFewArgsError(char *name);
+
 #endif

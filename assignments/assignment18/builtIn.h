@@ -17,6 +17,8 @@ Value *builtInMinus(Value *args);
 
 Value *builtInMultiply(Value *args);
 
+Value *builtInDivide(Value *args);
+
 Value *builtInEquals(Value *args);
 
 Value *builtInLess(Value *args);

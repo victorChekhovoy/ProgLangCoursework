@@ -33,7 +33,7 @@ void bindPrimitives(Frame *frame){
   bindPrimitiveFunction("cons", &builtInCons, frame);
   bindPrimitiveFunction("-", &builtInMinus, frame);
   bindPrimitiveFunction("*", &builtInMultiply, frame);
-  bindPrimitiveFunction("*", &builtInMultiply, frame);
+  bindPrimitiveFunction("/", &builtInDivide, frame);
   bindPrimitiveFunction("=", &builtInEquals, frame);
   bindPrimitiveFunction("eq?", &builtInEquals, frame);
   bindPrimitiveFunction("<", &builtInLess, frame);

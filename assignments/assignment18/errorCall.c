@@ -221,3 +221,19 @@ void greaterWrongTypeError(){
   printf("Evaluation Error: wrong type passed to >\n");
   texit(0);
 }
+
+
+void primitiveTooManyArgsError(char *name, int inputLength){
+  printf("Evaluation Error: too many arguments (%i) passed to %s, 2 expected\n", inputLength, name);
+  texit(0);
+}
+
+void primitiveNoArgsError(char *name){
+  printf("Evaluation Error: no arguments passed to %s, 2 required\n", name);
+  texit(0);
+}
+
+void primitiveTooFewArgsError(char *name){
+  printf("Evaluation Error: too few arguments (1) passed to %s, 2 expected\n", name);
+  texit(0);
+}

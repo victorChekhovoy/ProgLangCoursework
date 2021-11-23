@@ -128,6 +128,15 @@ Value *builtInAdd(Value *args) {
 }
 
 Value *builtInMinus(Value *args) {
+  int inputLength = length(args);
+  if (inputLength > 2){
+    primitiveTooManyArgsError("-", inputLength);
+  } else if (inputLength == 0){
+    primitiveNoArgsError("-");
+  } else if (inputLength == 1){
+    primitiveTooFewArgsError("-");
+  }
+
   Value *result = talloc(sizeof(Value));
   result->type = INT_TYPE;
   int integerSum;
@@ -163,13 +172,16 @@ Value *builtInMinus(Value *args) {
 Value *builtInMultiply(Value *args){
   Value *result = talloc(sizeof(Value));
   result->type = INT_TYPE;
-  int product;
+  result->i = 1;
 
-  while (args->type != NULL_TYPE) {
+  while (!isNull(args)) {
     if (car(args)->type == INT_TYPE) {
       result->i *= car(args)->i;
     } else if (car(args)->type == DOUBLE_TYPE){
-      result->type = DOUBLE_TYPE;
+      if (result->type == INT_TYPE){
+        result->type = DOUBLE_TYPE;
+        result->d = (double) result->i;
+      }
       result->d *= car(args)->d;
     } else {
       builtInMultipyArgumentTypeError();
@@ -180,7 +192,53 @@ Value *builtInMultiply(Value *args){
   return result;
 }
 
+Value *builtInDivide(Value *args){
+  int inputLength = length(args);
+  if (inputLength > 2){
+    primitiveTooManyArgsError("/", inputLength);
+  } else if (inputLength == 0){
+    primitiveNoArgsError("/");
+  } else if (inputLength == 1){
+    primitiveTooFewArgsError("/");
+  }
+  Value *firstArg = car(args);
+  Value *secondArg = car(cdr(args));
+
+  double firstArgumentConverted = 0;
+  if (firstArg->type == INT_TYPE){
+    firstArgumentConverted = (double) firstArg->i;
+  } else {
+    firstArgumentConverted = firstArg->d;
+  }
+
+  double secondArgumentConverted = 0;
+  if (secondArg->type == INT_TYPE){
+    secondArgumentConverted = (double) secondArg->i;
+  } else {
+    secondArgumentConverted = secondArg->d;
+  }
+
+  double result = firstArgumentConverted / secondArgumentConverted;
+  Value *resultValue = talloc(sizeof(Value));
+  if (result == ((double) (int) result)){
+    resultValue->type = INT_TYPE;
+    resultValue->i = (int) result;
+  } else {
+    resultValue->type = DOUBLE_TYPE;
+    resultValue->d = result;
+  }
+  return resultValue;
+}
+
 Value *builtInEquals(Value *args){
+  int inputLength = length(args);
+  if (inputLength > 2){
+    primitiveTooManyArgsError("=", inputLength);
+  } else if (inputLength == 0){
+    primitiveNoArgsError("=");
+  } else if (inputLength == 1){
+    primitiveTooFewArgsError("=");
+  }
   Value *firstArgument = car(args);
   Value *secondArgument = car(cdr(args));
   Value *output = talloc(sizeof(Value));
@@ -219,6 +277,14 @@ Value *builtInEquals(Value *args){
 }
 
 Value *builtInLess(Value *args){
+  int inputLength = length(args);
+  if (inputLength > 2){
+    primitiveTooManyArgsError("<", inputLength);
+  } else if (inputLength == 0){
+    primitiveNoArgsError("<");
+  } else if (inputLength == 1){
+    primitiveTooFewArgsError("<");
+  }
   Value *firstArgument = car(args);
   Value *secondArgument = car(cdr(args));
   Value *output = talloc(sizeof(Value));
@@ -247,6 +313,14 @@ Value *builtInLess(Value *args){
 }
 
 Value *builtInGreater(Value *args){
+  int inputLength = length(args);
+  if (inputLength > 2){
+    primitiveTooManyArgsError(">", inputLength);
+  } else if (inputLength == 0){
+    primitiveNoArgsError(">");
+  } else if (inputLength == 1){
+    primitiveTooFewArgsError(">");
+  }
   Value *firstArgument = car(args);
   Value *secondArgument = car(cdr(args));
   Value *output = talloc(sizeof(Value));
