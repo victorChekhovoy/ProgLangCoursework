@@ -25,5 +25,7 @@ Value *builtInLess(Value *args);
 
 Value *builtInGreater(Value *args);
 
+Value *builtInModulo(Value *args);
+
 
 #endif

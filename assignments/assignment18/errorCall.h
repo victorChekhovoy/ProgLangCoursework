@@ -89,4 +89,7 @@ void primitiveNoArgsError(char *name);
 
 void primitiveTooFewArgsError(char *name);
 
+void builtInModuloWrongNumberOfArgs();
+
+void builtInModuloArgumentTypeError();
 #endif

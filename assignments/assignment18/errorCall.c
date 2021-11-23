@@ -237,3 +237,10 @@ void primitiveTooFewArgsError(char *name){
   printf("Evaluation Error: too few arguments (1) passed to %s, 2 expected\n", name);
   texit(0);
 }
+void builtInModuloWrongNumberOfArgs(){
+  printf("Evaluation Error: wrong number of arguments passed to modulo. Expecting 2 arguments\n");
+}
+
+void builtInModuloArgumentTypeError(){
+  printf("Evaluation Error: wrong type of arguments passed to modulo. Expecting integers");
+}
