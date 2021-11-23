@@ -104,6 +104,9 @@ void printLL(Value **tree, bool printParens, bool endWhitespace){
 
 //Prints the result of a Scheme function
 void printResult(Value *result){
+  if (isNull(result)){
+    return;
+  }
   while (!isNull(result)){
     switch (result->type){
       case CONS_TYPE:

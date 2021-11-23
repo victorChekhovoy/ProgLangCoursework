@@ -247,6 +247,11 @@ void builtInModuloArgumentTypeError(){
 }
 
 void letrecUsedTooSoonError(Value *symbol){
-  printf("Evaluation error: letrec used a variable %s before all were computed.\n", symbol->s);
+  printf("Evaluation Error: letrec used a variable %s before all were computed.\n", symbol->s);
+  texit(0);
+}
+
+void setNoVariableError(Value *lookUp){
+  printf("Evaluation Error: <set!> couldn't find the variable %s in the frame; did you mean to use <define>?\n", lookUp->s);
   texit(0);
 }

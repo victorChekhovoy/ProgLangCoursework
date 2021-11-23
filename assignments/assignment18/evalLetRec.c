@@ -74,8 +74,10 @@ Frame *makeEmptyLetrecBindings(Value *letrecBindings, Frame *frame){
     addedBindings = bindingContainer;
     letrecBindings = cdr(letrecBindings);
   }
-  frame->bindings = addedBindings;
-  return frame;
+  Frame *newFrame = talloc(sizeof(Frame));
+  newFrame->bindings = addedBindings;
+  newFrame->parent = frame->parent;
+  return newFrame;
 }
 
 // Takes a letrec expression and a frame as input, and evaluates the expression
@@ -92,9 +94,13 @@ Value *evalLetRec(Value *args, Frame *frame){
   letrecFrame = makeEmptyLetrecBindings(bindings, letrecFrame);
   letrecFrame = evalLetrecBindings(bindings, frame, letrecFrame);
 
-  Value *returnValue = getLastElement(expression);
-  if (isNull(returnValue)){
+
+  if (isNull(expression)){
     letArgsError();
   }
-  return eval(returnValue, letrecFrame);
+  while(!isNull(cdr(expression))){
+    eval(car(expression), letrecFrame);
+    expression = cdr(expression);
+  }
+  return eval(car(expression), letrecFrame);
 }

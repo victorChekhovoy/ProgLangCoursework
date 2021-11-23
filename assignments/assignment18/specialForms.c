@@ -117,12 +117,12 @@ Frame *processSet(Value *args, Frame *frame){
 // Return the result of calling begin
 Value *processBegin(Value *args, Frame *frame){
   Value *result;
-  if(args->type == NULL_TYPE){
+  if(isNull(args)){
     result = makeNull();
     result->type = VOID_TYPE;
     return result;
   }
-  while(cdr(args)->type != NULL_TYPE){
+  while(!isNull(cdr(args))){
     eval(car(args), frame);
     args = cdr(args);
   }

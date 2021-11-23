@@ -95,4 +95,6 @@ void builtInModuloArgumentTypeError();
 
 void letrecUsedTooSoonError(Value *symbol);
 
+void setNoVariableError(Value *lookUp);
+
 #endif

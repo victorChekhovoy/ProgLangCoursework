@@ -14,15 +14,21 @@
 Frame *setLetStarVariables(Value *letBindings, Frame *frame){
   Value *currentBinding;
   Value *letBindingsDefined = makeNull();
+  Frame *newFrame = talloc(sizeof(Frame));
+  newFrame->parent = frame->parent;
+  newFrame->bindings = frame->bindings;
 
   while (!isNull(car(letBindings))){
+    Frame *iterationFrame = talloc(sizeof(Frame));
+    iterationFrame->parent = newFrame;
     currentBinding = car(letBindings);
-    Value *newBinding = makeBinding(currentBinding, frame);
-    Value *bindingContainer = cons(newBinding, frame->bindings);
-    frame->bindings = bindingContainer;
+    Value *newBinding = makeBinding(currentBinding, newFrame);
+    Value *bindingContainer = cons(newBinding, makeNull());
+    iterationFrame->bindings = bindingContainer;
     letBindings = cdr(letBindings);
+    newFrame = iterationFrame;
   }
-  return frame;
+  return newFrame;
 }
 
 // Takes a let expression and a frame as input, and evaluates the expression
@@ -37,10 +43,13 @@ Value *evalLetStar(Value *args, Frame *frame){
   letFrame->parent = frame;
   letFrame->bindings = makeNull();
   letFrame = setLetStarVariables(bindings, letFrame);
-  //frame = setVariables(bindings, frame);
-  Value *returnValue = getLastElement(expression);
-  if (isNull(returnValue)){
+  
+  if (isNull(expression)){
     letArgsError();
   }
-  return eval(returnValue, letFrame);
+  while(!isNull(cdr(expression))){
+    eval(car(expression), letFrame);
+    expression = cdr(expression);
+  }
+  return eval(car(expression), letFrame);
 }

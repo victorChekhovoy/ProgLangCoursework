@@ -37,16 +37,24 @@ Value *lookUpSymbol(Value *targetSymbol, Frame *frame){
 // Finds a symbol in the frame and replaces its value with the given value
 Frame *replaceSymbol(Value *lookUp, Value *replace, Frame *frame){
   Value *bindings = frame->bindings;
+  bool foundSymbol = false;
   Value *newBindings = makeNull();
   while(!isNull(bindings)){
     Value *currentSymbol = car(car(bindings));
-    if (strcmp(currentSymbol->s, lookUp->s) == 0){
+    if ((!foundSymbol) && (strcmp(currentSymbol->s, lookUp->s) == 0)){
       newBindings = cons(cons(currentSymbol, replace), newBindings);
-      cdr(car(bindings));
+      foundSymbol = true;
     } else{
       newBindings = cons(car(bindings), newBindings);
     }
     bindings = cdr(bindings);
+  }
+  if (!foundSymbol){
+    if (frame->parent == NULL){
+      setNoVariableError(lookUp);
+    } else {
+      frame->parent = replaceSymbol(lookUp, replace, frame->parent);
+    }
   }
   frame->bindings = newBindings;
   return frame;

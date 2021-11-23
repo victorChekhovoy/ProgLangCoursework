@@ -132,8 +132,10 @@ Frame *setVariables(Value *letBindings, Frame *frame){
     addedBindings = bindingContainer;
     letBindings = cdr(letBindings);
   }
-  frame->bindings = addedBindings;
-  return frame;
+  Frame *newFrame = talloc(sizeof(Frame));
+  newFrame->bindings = addedBindings;
+  newFrame->parent = frame->parent;
+  return newFrame;
 }
 
 // Takes a let expression and a frame as input, and evaluates the expression
@@ -148,10 +150,13 @@ Value *evalLet(Value *args, Frame *frame){
   letFrame->parent = frame;
   letFrame->bindings = makeNull();
   letFrame = setVariables(bindings, letFrame);
-  //frame = setVariables(bindings, frame);
-  Value *returnValue = getLastElement(expression);
-  if (isNull(returnValue)){
+  
+  if (isNull(expression)){
     letArgsError();
   }
-  return eval(returnValue, letFrame);
+  while(!isNull(cdr(expression))){
+    eval(car(expression), letFrame);
+    expression = cdr(expression);
+  }
+  return eval(car(expression), letFrame);
 }
