@@ -137,8 +137,8 @@ Value *builtInMinus(Value *args) {
     primitiveTooFewArgsError("-");
   }
 
-  Value *result = talloc(sizeof(Value));
-  result->type = INT_TYPE;
+  Value *output = talloc(sizeof(Value));
+  output->type = INT_TYPE;
   int integerSum;
   double doubleSum;
 
@@ -176,7 +176,7 @@ Value *builtInMultiply(Value *args){
 
   while (!isNull(args)) {
     if (car(args)->type == INT_TYPE) {
-      output->i *= car(args)->i;
+      result->i *= car(args)->i;
     } else if (car(args)->type == DOUBLE_TYPE){
       if (result->type == INT_TYPE){
         result->type = DOUBLE_TYPE;
@@ -189,7 +189,7 @@ Value *builtInMultiply(Value *args){
     args = cdr(args);
   }
 
-  return output;
+  return result;
 }
 
 Value *builtInDivide(Value *args){
