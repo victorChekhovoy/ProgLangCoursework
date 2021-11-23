@@ -110,7 +110,7 @@ Frame *processSet(Value *args, Frame *frame){
     setTooManyArgumentsError(inputLength);
   }
   Value *lookUp = car(args);
-  Value *replace = car(cdr(args));
+  Value *replace = eval(car(cdr(args)), frame);
   return replaceSymbol(lookUp, replace, frame);
 }
 
@@ -182,7 +182,7 @@ Value *processCond(Value *args, Frame *frame){
       if (conditionStatement->type == SYMBOL_TYPE && !strcmp(conditionStatement->s, "else")) {
         if (cdr(args)->type != NULL_TYPE) {
           condElseNotLast();
-        } 
+        }
         return eval(car(cdr(car(args))), frame);
       }
       conditionStatement = eval(conditionStatement, frame);
